@@ -4,6 +4,22 @@ A verifiable AI agent for environmental, ESG, and public health monitoring.
 
 This project explores how Chainlink CRE, public real-world data APIs, LLM-based analysis, zkVerify, and Solidity smart contracts can be combined to generate transparent and verifiable risk alerts.
 
+--------
+## Workflow Architecture
+<img width="1010" height="563" alt="Screenshot 2026-07-02 at 00 55 20" src="https://github.com/user-attachments/assets/38c0fd79-2dde-455a-ada1-a7634cf58500" />
+
+---
+
+## Smart Contract
+
+HealthAlertRegistry.sol
+
+- recordAlert()
+
+- getAlert()
+
+- getAlertCount()
+- 
 ## Modules
 
 ### Phase 1: Disease Outbreak Monitoring
