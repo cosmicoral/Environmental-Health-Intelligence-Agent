@@ -1,3 +1,4 @@
+<img width="1008" height="449" alt="Screenshot 2026-07-02 at 00 56 53" src="https://github.com/user-attachments/assets/1d6b0638-5741-4545-a24b-ae8882413fde" />
 # Environmental Health Intelligence Agent
 
 A verifiable AI agent for environmental, ESG, and public health monitoring.
@@ -6,7 +7,8 @@ This project explores how Chainlink CRE, public real-world data APIs, LLM-based 
 
 --------
 ## Workflow Architecture
-<img width="1010" height="563" alt="Screenshot 2026-07-02 at 00 55 20" src="https://github.com/user-attachments/assets/38c0fd79-2dde-455a-ada1-a7634cf58500" />
+<img width="1017" height="439" alt="Screenshot 2026-07-02 at 00 57 16" src="https://github.com/user-attachments/assets/b67c3b01-ea08-49d8-8734-f38edbf6c63a" />
+
 
 ---
 
