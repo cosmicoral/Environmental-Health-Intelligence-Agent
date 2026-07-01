@@ -21,7 +21,7 @@ HealthAlertRegistry.sol
 
 - getAlertCount()
 
----
+
 ## Modules
 
 ### Phase 1: Disease Outbreak Monitoring
