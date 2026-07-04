@@ -1,6 +1,8 @@
 import "./index.css";
 import { useEffect, useState } from "react";
 import { getLatestAlert } from "./services/blockchain";
+import { createZkVerifyRecord } from "./services/zkverify";
+import { getClimateRisk } from "./services/climate";
 
 const modules = [
   { icon: "🦠", title: "Public Health", status: "Active", color: "emerald", text: "CDC + Gemini live risk workflow" },
@@ -13,6 +15,7 @@ const modules = [
 function App() {
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [climate, setClimate] = useState(null);
   useEffect(() => {
   async function loadAlert() {
     try {
@@ -25,9 +28,21 @@ function App() {
     }
   }
 
+  async function loadClimate() {
+    try {
+      const latestClimate = await getClimateRisk();
+      setClimate(latestClimate);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   loadAlert();
+  loadClimate();
 }, []);
+
   const riskScore = alert?.riskScore ?? 0;
+  const zkRecord = createZkVerifyRecord(alert);
   const riskWidth = `${riskScore}%`;
   const riskLabel = riskScore <= 30 ? "Low Risk" : riskScore <= 70 ? "Medium Risk" : "High Risk";
   return (
@@ -59,7 +74,59 @@ function App() {
           </div>
         </header>
 
-        <section className="grid gap-6 lg:grid-cols-[380px_1fr]">
+             <section className="mt-6 rounded-[2rem] border border-amber-500/30 bg-amber-950/20 p-6">
+  <div className="flex items-center justify-between gap-4">
+    <div>
+      <p className="text-sm font-semibold uppercase tracking-[0.25em] text-amber-300">
+        Climate Risk Module
+      </p>
+      <h2 className="mt-2 text-xl font-bold">
+        London Heatwave Intelligence
+      </h2>
+    </div>
+
+    <span className="rounded-full bg-amber-400/10 px-3 py-1 text-sm font-semibold text-amber-300">
+      {climate ? "Live Climate Data" : "Loading"}
+    </span>
+  </div>
+
+  <div className="mt-5 grid gap-4 md:grid-cols-4">
+    <Info label="City" value={climate?.city || "Loading"} />
+    <Info label="Temperature" value={climate ? `${climate.temperature}°C` : "Loading"} />
+    <Info label="Humidity" value={climate ? `${climate.humidity}%` : "Loading"} />
+    <Info label="Risk Level" value={climate ? `${climate.riskLevel}/5` : "Loading"} />
+  </div>
+
+  <div className="mt-5 rounded-3xl border border-slate-800 bg-black/30 p-6">
+    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-amber-300">
+      Safety Advice
+    </p>
+    <p className="mt-4 text-lg leading-8 text-slate-200">
+      {climate?.safetyAdvice || "Fetching climate risk data from Open-Meteo..."}
+    </p>
+    <p className="mt-4 text-sm text-slate-500">
+      Source: {climate?.source || "Open-Meteo API"}
+    </p>
+  </div>
+</section>
+
+        <section className="mt-6 rounded-[2rem] border border-cyan-500/20 bg-cyan-950/10 p-6">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+              Public Health Module
+            </p>
+            <h2 className="mt-2 text-xl font-bold">
+              CDC COVID-19 Intelligence
+            </h2>
+          </div>
+
+    <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-sm font-semibold text-cyan-300">
+      {alert ? "On-chain Alert" : "Waiting for Alert"}
+    </span>
+  </div>
+
+  <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
           <div className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-8 shadow-2xl">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
               Latest Risk
@@ -104,13 +171,21 @@ function App() {
                 {alert?.summary || "No on-chain alert has been recorded yet. CRE simulation is complete; live alerts will appear after deployment or manual contract interaction."}
               </p>
             </div>
+            </div>
           </div>
         </section>
 
-        <section className="mt-6 rounded-[2rem] border border-slate-800 bg-slate-900/60 p-6">
+  <section className="mt-6 rounded-[2rem] border border-slate-800 bg-slate-900/60 p-6">
           <h2 className="text-xl font-bold">Workflow</h2>
-          <div className="mt-5 grid gap-3 md:grid-cols-5">
-            {["CDC API", "Gemini AI", "Chainlink CRE", "Solidity Registry", "Dashboard"].map((step, i) => (
+          <div className="mt-5 grid gap-3 md:grid-cols-6">
+            {[
+                "Public Health Data",
+                "Climate Data",
+                "Gemini Risk Analysis",
+                "AI Decision Gate",
+                "Solidity Registry",
+                "Dashboard",
+              ].map((step, i) => (
               <div key={step} className="rounded-2xl bg-slate-950 p-4 text-center">
                 <p className="text-xs text-slate-500">Step {i + 1}</p>
                 <p className="mt-2 font-semibold">{step}</p>
