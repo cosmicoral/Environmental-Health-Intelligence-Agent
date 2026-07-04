@@ -1,4 +1,6 @@
 import "./index.css";
+import { useEffect, useState } from "react";
+import { getLatestAlert } from "./services/blockchain";
 
 const modules = [
   { icon: "🦠", title: "Public Health", status: "Active", color: "emerald", text: "CDC + Gemini live risk workflow" },
@@ -9,6 +11,25 @@ const modules = [
 ];
 
 function App() {
+  const [alert, setAlert] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+  async function loadAlert() {
+    try {
+      const latest = await getLatestAlert();
+      setAlert(latest);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadAlert();
+}, []);
+  const riskScore = alert?.riskScore ?? 0;
+  const riskWidth = `${riskScore}%`;
+  const riskLabel = riskScore <= 30 ? "Low Risk" : riskScore <= 70 ? "Medium Risk" : "High Risk";
   return (
     <main className="min-h-screen bg-[#050816] text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
@@ -45,15 +66,17 @@ function App() {
             </p>
 
             <div className="mt-8 flex items-end gap-3">
-              <span className="text-8xl font-black">10</span>
+              <span className="text-8xl font-black">
+                {loading ? "..." : riskScore}
+              </span>
               <span className="mb-4 text-xl text-slate-400">/100</span>
             </div>
 
             <div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-800">
-              <div className="h-full w-[10%] rounded-full bg-emerald-400" />
+              <div className="h-full rounded-full bg-emerald-400" style={{ width: riskWidth }} />
             </div>
 
-            <p className="mt-5 text-lg font-semibold text-emerald-300">Low Risk</p>
+            <p className="mt-5 text-lg font-semibold text-emerald-300">{riskLabel}</p>
             <p className="mt-2 text-sm leading-6 text-slate-400">
               Based on CDC hospitalization data analyzed by Gemini.
             </p>
@@ -67,10 +90,10 @@ function App() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <Info label="Disease" value="COVID-19" />
-              <Info label="Region" value="United States" />
-              <Info label="Source" value="CDC Open Data + Gemini" />
-              <Info label="Status" value="On-chain payload encoded" />
+              <Info label="Disease" value={alert?.disease || "No alert yet"} />
+              <Info label="Region" value={alert?.region || "No alert yet"} />
+              <Info label="Source" value={alert?.source || "Waiting for on-chain data"} />
+              <Info label="Status" value={alert ? "Loaded from Sepolia" : "No on-chain alert yet"} />
             </div>
 
             <div className="mt-8 rounded-3xl border border-slate-800 bg-black/30 p-6">
@@ -78,8 +101,7 @@ function App() {
                 AI Summary
               </p>
               <p className="mt-4 text-xl leading-9 text-slate-200">
-                COVID-19 hospitalization rates across the analyzed states are very low,
-                suggesting minimal current risk.
+                {alert?.summary || "No on-chain alert has been recorded yet. CRE simulation is complete; live alerts will appear after deployment or manual contract interaction."}
               </p>
             </div>
           </div>
