@@ -1,7 +1,7 @@
 import { BrowserProvider, Contract } from "ethers";
 import contractJson from "./abi/HealthAlertRegistry.json";
 
-const CONTRACT_ADDRESS = "0x18f1f45025436260f3fFDDF239751bCFb0306b0e";
+const CONTRACT_ADDRESS = "0x82538b6B17e74eFcCA2f3b95E69e0354F53808AE";
 
 export async function getContract() {
   if (!window.ethereum) {

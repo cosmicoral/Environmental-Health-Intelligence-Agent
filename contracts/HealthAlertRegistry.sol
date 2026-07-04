@@ -50,6 +50,36 @@ contract HealthAlertRegistry{
             block.timestamp
         );
     }
+    function onReport(bytes calldata report) external {
+    (
+        string memory source,
+        string memory region,
+        string memory disease,
+        uint256 riskScore,
+        string memory summary
+    ) = abi.decode(report, (string, string, string, uint256, string));
+
+    require(riskScore <= 100, "Risk score must be <= 100");
+
+    alerts.push(Alert({
+        source: source,
+        region: region,
+        disease: disease,
+        riskScore: riskScore,
+        summary: summary,
+        timestamp: block.timestamp
+    }));
+
+    emit AlertRecorded(
+        alerts.length - 1,
+        source,
+        region,
+        disease,
+        riskScore,
+        summary,
+        block.timestamp
+    );
+}
     function getAlert(uint256 alertId) external view returns(Alert memory){
         return alerts[alertId];
 }
