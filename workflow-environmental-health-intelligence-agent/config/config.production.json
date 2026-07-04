@@ -1,0 +1,7 @@
+{
+  "schedule": "*/10 * * * *",
+  "chainSelectorName": "ethereum-testnet-sepolia",
+  "apiUrl": "https://generativelanguage.googleapis.com",
+  "healthAlertRegistryAddress": "TODO_HEALTHALERTREGISTRY_ADDRESS",
+  "gasLimit": "500000"
+}

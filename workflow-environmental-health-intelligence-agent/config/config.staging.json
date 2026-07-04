@@ -1,0 +1,8 @@
+{
+  "schedule": "*/10 * * * *",
+  "chainSelectorName": "ethereum-testnet-sepolia",
+  "cdcApiUrl": "https://data.cdc.gov/resource/6jg4-xsqq.json?$select=state,week_ending_date,weekly_rate,cumulative_rate&$where=agecat_label='All'%20AND%20sex_label='All'%20AND%20race_label='All'%20AND%20rate_type='Observed'&$order=week_ending_date%20DESC&$limit=10",
+  "geminiApiUrl": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "healthAlertRegistryAddress": "0x68f4c0913f80934e1b0733281f2097feac6af6fe",
+  "gasLimit": "500000"
+}
