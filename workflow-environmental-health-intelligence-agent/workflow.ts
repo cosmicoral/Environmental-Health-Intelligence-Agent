@@ -174,8 +174,16 @@ runtime.log(`Gemini parsed response: ${JSON.stringify(geminiResponse)}`)
 
     // ── EVM WRITE: HealthAlertRegistry.recordAlert ─────
     const reportPayload = encodeAbiParameters(
-      parseAbiParameters('uint256 value'), // TODO: match your contract's onReport param types
-      [0n],                                // TODO: fill actual report data
+      parseAbiParameters(
+        'string source, string region, string disease, uint256 riskScore, string summary'
+      ),
+      [
+        'CDC Open Data + Gemini',
+        geminiResponse.region,
+        geminiResponse.disease,
+        BigInt(geminiResponse.riskScore),
+        geminiResponse.summary,
+      ],
     )
     const report = runtime.report({
       encodedPayload: hexToBase64(reportPayload),
