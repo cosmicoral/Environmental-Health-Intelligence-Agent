@@ -152,25 +152,6 @@ const cleanedGeminiText = geminiText
 const geminiResponse = JSON.parse(cleanedGeminiText)
 
 runtime.log(`Gemini parsed response: ${JSON.stringify(geminiResponse)}`)
-// runtime.log('Posting to Gemini')
-    // const geminiClient = new HTTPClient()
-    // const geminiResponse = geminiClient
-    //   .sendRequest(
-    //     runtime,
-    //     (sendRequester) => {
-    //       const res = sendRequester.sendRequest({
-    //         method: 'POST',
-    //         url: runtime.config.geminiApiUrl,
-    //         // TODO: fill request body
-    //         body: JSON.stringify({ /* TODO */ }),
-    //       }).result()
-    //       if (res.statusCode !== 200 && res.statusCode !== 201)
-    //         throw new Error(`HTTP POST failed: ${res.statusCode}`)
-    //       return JSON.parse(Buffer.from(res.body).toString('utf-8'))
-    //     },
-    //     ((a: any) => a) as any,
-    //   )()
-    //   .result()
 
     // ── EVM WRITE: HealthAlertRegistry.recordAlert ─────
     const reportPayload = encodeAbiParameters(
