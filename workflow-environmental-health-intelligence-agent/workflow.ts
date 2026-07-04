@@ -33,7 +33,9 @@ export const configSchema = z.object({
   schedule: z.string(),
   chainSelectorName: z.string(),
   cdcApiUrl: z.string(),
+  openMeteoApiUrl: z.string(),
   geminiApiUrl: z.string(),
+  alertThreshold: z.string(), 
   healthAlertRegistryAddress: z.string(),
   gasLimit: z.string(),
 })
@@ -75,6 +77,62 @@ export function on10MinHealthCheck(runtime: Runtime<Config>, payload: CronPayloa
             )()
       .result()
     runtime.log(`CDC Open Data response: ${JSON.stringify(cDCOpenDataResponse)}`)
+    
+    // ── HTTP GET: Open-Meteo Climate Data ─────────────────────────────
+runtime.log("Fetching Open-Meteo Climate Data")
+
+const openMeteoUrl =
+  `${runtime.config.openMeteoApiUrl}` +
+  `?latitude=51.5072` +
+  `&longitude=-0.1276` +
+  `&current=temperature_2m,relative_humidity_2m,wind_speed_10m` +
+  `&hourly=uv_index` +
+  `&timezone=Europe%2FLondon`
+
+const climateResponse = httpClient
+  .sendRequest(
+    runtime,
+    (sendRequester) => {
+      const res = sendRequester.sendRequest({
+        method: "GET",
+        url: openMeteoUrl,
+      }).result()
+
+      if (res.statusCode !== 200) {
+        throw new Error(`Open-Meteo GET failed: ${res.statusCode}`)
+      }
+
+      return JSON.parse(Buffer.from(res.body).toString("utf-8"))
+    },
+    ((a: any) => a) as any,
+  )()
+  .result()
+
+const temperature = Number(climateResponse.current.temperature_2m)
+const humidity = Number(climateResponse.current.relative_humidity_2m)
+const windSpeed = Number(climateResponse.current.wind_speed_10m)
+const uvIndex = Number(climateResponse.hourly?.uv_index?.[0] ?? 0)
+
+let climateRisk = 1
+let climateAdvice = "Normal conditions. Monitor local weather updates."
+
+if (temperature >= 35 || uvIndex >= 8) {
+  climateRisk = 5
+  climateAdvice = "Extreme heat or UV risk. Avoid outdoor activity during peak hours."
+} else if (temperature >= 30 || uvIndex >= 6) {
+  climateRisk = 4
+  climateAdvice = "High heat or UV risk. Reduce prolonged outdoor exposure."
+} else if (temperature >= 26 || uvIndex >= 4) {
+  climateRisk = 3
+  climateAdvice = "Moderate heat risk. Stay hydrated and check vulnerable groups."
+} else if (temperature >= 22) {
+  climateRisk = 2
+  climateAdvice = "Mild heat risk. Continue normal precautions."
+}
+
+runtime.log(
+  `Climate response: temperature=${temperature}, humidity=${humidity}, windSpeed=${windSpeed}, uvIndex=${uvIndex}, climateRisk=${climateRisk}`
+)
 
     // ── HTTP POST: Gemini ─────────────────────────────
 const geminiSecret = runtime.getSecret({
@@ -153,17 +211,48 @@ const geminiResponse = JSON.parse(cleanedGeminiText)
 
 runtime.log(`Gemini parsed response: ${JSON.stringify(geminiResponse)}`)
 
+// ── Agent Decision Gate ─────────────────────────────
+
+const riskScore = Number(geminiResponse.riskScore)
+const alertThreshold = Number(runtime.config.alertThreshold)
+
+// Health decision
+const shouldPublishHealth =
+  riskScore >= alertThreshold
+
+// Climate decision
+const climateThreshold = 3
+const shouldPublishClimate =
+  climateRisk >= climateThreshold
+
+runtime.log(
+  `Decision Gate -> health=${shouldPublishHealth}, climate=${shouldPublishClimate}`
+)
+
+if (!shouldPublishHealth && !shouldPublishClimate) {
+  runtime.log("No critical risk detected. Skipping on-chain alert.")
+  return "Skipped"
+}
+
+runtime.log("Critical risk detected. Preparing blockchain transaction.")
+
+  const combinedSummary =
+    `${geminiResponse.summary} ` +
+    `Climate signal: London temperature ${temperature}°C, humidity ${humidity}%, ` +
+    `UV index ${uvIndex}, climate risk ${climateRisk}/5. ` +
+    `Advice: ${climateAdvice}`
+
     // ── EVM WRITE: HealthAlertRegistry.recordAlert ─────
     const reportPayload = encodeAbiParameters(
       parseAbiParameters(
         'string source, string region, string disease, uint256 riskScore, string summary'
       ),
       [
-        'CDC Open Data + Gemini',
+        'CDC Open Data + Open-Meteo + Gemini',
         geminiResponse.region,
         geminiResponse.disease,
         BigInt(geminiResponse.riskScore),
-        geminiResponse.summary,
+        combinedSummary,
       ],
     )
     const report = runtime.report({
