@@ -24,6 +24,7 @@ import {
 } from '@chainlink/cre-sdk'
 import { type Address, encodeFunctionData, parseAbi, parseAbiParameters, encodeAbiParameters, decodeFunctionResult } from 'viem'
 import { z } from 'zod'
+import { Buffer } from "buffer"
 
 // ─── Config ────────────────────────────────────────────────────────────────
 // Values come from config.json — edit that file, not here.
@@ -76,14 +77,81 @@ export function on10MinHealthCheck(runtime: Runtime<Config>, payload: CronPayloa
     runtime.log(`CDC Open Data response: ${JSON.stringify(cDCOpenDataResponse)}`)
 
     // ── HTTP POST: Gemini ─────────────────────────────
-    runtime.log("Skipping Gemini for now")
+const geminiSecret = runtime.getSecret({
+  namespace: "GEMINI_API_KEY",
+  id: "GEMINI_API_KEY",
+}).result()
 
-    const geminiResponse = {
-      riskScore: 30,
-      disease: "COVID-19",
-      region: "United States",
-      summary: "CDC hospitalization rates remain low."
+const apiKey = geminiSecret.value
+if (!apiKey) throw new Error("Missing GEMINI_API_KEY value")
+
+const geminiUrl = `${runtime.config.geminiApiUrl}?key=${apiKey}`
+
+runtime.log("Posting to Gemini")
+
+const geminiClient = new HTTPClient()
+
+const prompt = `
+You are a public health analyst.
+
+Analyze this CDC COVID-19 hospitalization dataset and return ONLY valid JSON.
+
+CDC data:
+${JSON.stringify(cDCOpenDataResponse)}
+
+Return format:
+{
+  "riskScore": 0-100,
+  "disease": "COVID-19",
+  "region": "United States",
+  "summary": "one concise sentence"
+}
+`
+
+const geminiBody = Buffer.from(JSON.stringify({
+  contents: [
+    {
+      parts: [
+        { text: prompt }
+      ]
     }
+  ]
+})).toString("base64")
+
+const rawGeminiResponse = geminiClient
+  .sendRequest(
+    runtime,
+    (sendRequester) => {
+      const res = sendRequester.sendRequest({
+        method: "POST",
+        url: geminiUrl,
+        body: geminiBody,
+      }).result()
+
+      if (res.statusCode !== 200 && res.statusCode !== 201) {
+      const errorBody = Buffer.from(res.body).toString("utf-8")
+      throw new Error(`Gemini HTTP POST failed: ${res.statusCode} ${errorBody}`)
+    }
+
+      return JSON.parse(Buffer.from(res.body).toString("utf-8"))
+    },
+    ((a: any) => a) as any,
+  )()
+  .result()
+
+const geminiText =
+  rawGeminiResponse?.candidates?.[0]?.content?.parts?.[0]?.text || "{}"
+
+runtime.log(`Gemini raw text: ${geminiText}`)
+
+const cleanedGeminiText = geminiText
+  .replace(/```json/g, "")
+  .replace(/```/g, "")
+  .trim()
+
+const geminiResponse = JSON.parse(cleanedGeminiText)
+
+runtime.log(`Gemini parsed response: ${JSON.stringify(geminiResponse)}`)
 // runtime.log('Posting to Gemini')
     // const geminiClient = new HTTPClient()
     // const geminiResponse = geminiClient
