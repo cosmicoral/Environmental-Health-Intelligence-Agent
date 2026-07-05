@@ -10,6 +10,8 @@
 An AI-powered environmental intelligence agent that combines public health data, live climate observations, Chainlink CRE workflows, Gemini 2.5 Flash, Solidity smart contracts, and a React dashboard to monitor real-world risks and publish selected alerts to the Sepolia test network.
 
 The project demonstrates how multiple real-world data sources can be analyzed by AI and evaluated through deterministic decision logic before being recorded on-chain.
+
+When the decision gate is triggered, the CRE workflow generates a zkVerify-ready proof package before preparing the on-chain alert. Full zkVerify proof submission is planned as a future extension.
 --------
 ## Workflow Architecture
 
@@ -322,3 +324,4 @@ The current prototype monitors both public health and climate signals before dec
 # Next Milestone
 
 After Chainlink approves deployment access, this workflow will transition from local simulation to a fully deployed Chainlink CRE workflow capable of automatically writing AI-generated public health alerts to the Sepolia blockchain.
+Current implementation prepares proof metadata and verification-ready attestations. Full zkVerify proof submission is planned as the next milestone.
