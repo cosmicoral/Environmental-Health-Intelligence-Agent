@@ -25,8 +25,23 @@ contract HealthAlertRegistry {
         address publisher;
     }
 
+    struct EnvironmentalDecisionAlert {
+    uint256 alertId;
+    string source;
+    string region;
+    string disease;
+    uint256 healthRisk;
+    uint8 climateRisk;
+    uint8 esgRisk;
+    bytes32 proofHash;
+    string summary;
+    uint256 timestamp;
+    address publisher;
+}
+
     HealthAlert[] public healthAlerts;
     ClimateAlert[] public climateAlerts;
+    EnvironmentalDecisionAlert[] public environmentalDecisionAlerts;
     mapping(string => ClimateAlert[]) private cityClimateAlerts;
 
     event HealthAlertRecorded(
@@ -48,6 +63,18 @@ contract HealthAlertRegistry {
         uint256 timestamp,
         address indexed publisher
     );
+
+    event EnvironmentalDecisionAlertRecorded(
+    uint256 indexed alertId,
+    string region,
+    string disease,
+    uint256 healthRisk,
+    uint8 climateRisk,
+    uint8 esgRisk,
+    bytes32 proofHash,
+    uint256 timestamp,
+    address indexed publisher
+   );
 
     function recordAlert(
         string memory source,
@@ -118,6 +145,54 @@ contract HealthAlertRegistry {
         );
     }
 
+    function recordEnvironmentalDecisionAlert(
+    string memory source,
+    string memory region,
+    string memory disease,
+    uint256 healthRisk,
+    uint8 climateRisk,
+    uint8 esgRisk,
+    bytes32 proofHash,
+    string memory summary
+) external returns (uint256 alertId) {
+    require(bytes(source).length > 0, "Source required");
+    require(bytes(region).length > 0, "Region required");
+    require(bytes(disease).length > 0, "Disease required");
+    require(bytes(summary).length > 0, "Summary required");
+    require(healthRisk <= 100, "Health risk must be <= 100");
+    require(climateRisk >= 1 && climateRisk <= 5, "Climate risk must be 1-5");
+    require(esgRisk >= 1 && esgRisk <= 5, "ESG risk must be 1-5");
+    require(proofHash != bytes32(0), "Proof hash required");
+
+    alertId = environmentalDecisionAlerts.length;
+
+    environmentalDecisionAlerts.push(EnvironmentalDecisionAlert({
+        alertId: alertId,
+        source: source,
+        region: region,
+        disease: disease,
+        healthRisk: healthRisk,
+        climateRisk: climateRisk,
+        esgRisk: esgRisk,
+        proofHash: proofHash,
+        summary: summary,
+        timestamp: block.timestamp,
+        publisher: msg.sender
+    }));
+
+    emit EnvironmentalDecisionAlertRecorded(
+        alertId,
+        region,
+        disease,
+        healthRisk,
+        climateRisk,
+        esgRisk,
+        proofHash,
+        block.timestamp,
+        msg.sender
+    );
+   }
+
     function getAlert(uint256 alertId) external view returns (HealthAlert memory) {
         return healthAlerts[alertId];
     }
@@ -146,6 +221,27 @@ contract HealthAlertRegistry {
 
     function getClimateAlertsByCity(string memory city) external view returns (ClimateAlert[] memory) {
         return cityClimateAlerts[city];
+    }
+
+    function getEnvironmentalDecisionAlert(uint256 alertId)
+        external
+        view
+        returns (EnvironmentalDecisionAlert memory)
+    {
+        return environmentalDecisionAlerts[alertId];
+    }
+
+    function getEnvironmentalDecisionAlertCount() external view returns (uint256) {
+        return environmentalDecisionAlerts.length;
+    }
+
+    function getLatestEnvironmentalDecisionAlert()
+        external
+        view
+        returns (EnvironmentalDecisionAlert memory)
+    {
+        require(environmentalDecisionAlerts.length > 0, "No environmental alerts");
+        return environmentalDecisionAlerts[environmentalDecisionAlerts.length - 1];
     }
 
     function _recordHealthAlert(

@@ -66,6 +66,67 @@
 					{
 						"indexed": false,
 						"internalType": "string",
+						"name": "region",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "disease",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "healthRisk",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "climateRisk",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "esgRisk",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "proofHash",
+						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "publisher",
+						"type": "address"
+					}
+				],
+				"name": "EnvironmentalDecisionAlertRecorded",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "alertId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
 						"name": "source",
 						"type": "string"
 					},
@@ -157,6 +218,75 @@
 						"internalType": "bytes32",
 						"name": "evidenceHash",
 						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "publisher",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "environmentalDecisionAlerts",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "alertId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "source",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "region",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "disease",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "healthRisk",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "climateRisk",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "esgRisk",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "proofHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "summary",
+						"type": "string"
 					},
 					{
 						"internalType": "uint256",
@@ -402,6 +532,95 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "alertId",
+						"type": "uint256"
+					}
+				],
+				"name": "getEnvironmentalDecisionAlert",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "alertId",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "source",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "region",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "disease",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "healthRisk",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8",
+								"name": "climateRisk",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "esgRisk",
+								"type": "uint8"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "proofHash",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "string",
+								"name": "summary",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "publisher",
+								"type": "address"
+							}
+						],
+						"internalType": "struct HealthAlertRegistry.EnvironmentalDecisionAlert",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getEnvironmentalDecisionAlertCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "getLatestAlert",
 				"outputs": [
@@ -509,6 +728,76 @@
 							}
 						],
 						"internalType": "struct HealthAlertRegistry.ClimateAlert",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getLatestEnvironmentalDecisionAlert",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "alertId",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "source",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "region",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "disease",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "healthRisk",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8",
+								"name": "climateRisk",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "esgRisk",
+								"type": "uint8"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "proofHash",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "string",
+								"name": "summary",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "publisher",
+								"type": "address"
+							}
+						],
+						"internalType": "struct HealthAlertRegistry.EnvironmentalDecisionAlert",
 						"name": "",
 						"type": "tuple"
 					}
@@ -659,6 +948,60 @@
 				],
 				"stateMutability": "nonpayable",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "source",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "region",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "disease",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "healthRisk",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "climateRisk",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "esgRisk",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "proofHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "string",
+						"name": "summary",
+						"type": "string"
+					}
+				],
+				"name": "recordEnvironmentalDecisionAlert",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "alertId",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -689,11 +1032,11 @@
 	},
 	"sources": {
 		"contracts/HealthAlertRegistry.sol": {
-			"keccak256": "0x9ac9d6536caad4f43a4ada24a0116716cc631c1e2ceffd8e2a38db87948348ae",
+			"keccak256": "0xc6872131b2102d4b2c6394fbaec5cb21a4a6d7a0f0e1837364c22aec1b0461b9",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://adcc6dcf8d79de0741d2790079df2ce89ff67a17a67aed1898e03b59ca590e7e",
-				"dweb:/ipfs/QmeUFfccm4v4ZMmAeYZRo1bXLh832xieCFFU1t3LfakVPw"
+				"bzz-raw://db253aaff5c74fc6d2dcd7473d467d635ee81e9101be3265c19d177e2ba79c95",
+				"dweb:/ipfs/QmbvXx3HbKAbPMWM5NiGgXCbe5H6cUNw9jsmUJNFT27o7y"
 			]
 		}
 	},
