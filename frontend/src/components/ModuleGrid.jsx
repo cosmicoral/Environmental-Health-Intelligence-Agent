@@ -1,7 +1,7 @@
 const modules = [
   { icon: "🦠", title: "Public Health", status: "Active", text: "CDC + Gemini live risk workflow" },
   { icon: "🌡️", title: "Heatwave", status: "Active", text: "Connected Heatwave-Proof-AI module" },
-  { icon: "🌱", title: "EU ESG", status: "Planned", text: "Carbon, water, energy indicators" },
+  { icon: "🌱", title: "EU ESG", status: "Active", text: "Carbon, water, energy indicators" },
   { icon: "🔐", title: "zkVerify", status: "Planned", text: "Proof-backed AI and data outputs" },
   { icon: "📈", title: "The Graph", status: "Planned", text: "Index alerts for dashboards" },
 ];
