@@ -34,6 +34,7 @@ export const configSchema = z.object({
   chainSelectorName: z.string(),
   cdcApiUrl: z.string(),
   openMeteoApiUrl: z.string(),
+  carbonIntensityApiUrl: z.string(),
   geminiApiUrl: z.string(),
   alertThreshold: z.string(), 
   healthAlertRegistryAddress: z.string(),
@@ -133,7 +134,57 @@ if (temperature >= 35 || uvIndex >= 8) {
 runtime.log(
   `Climate response: temperature=${temperature}, humidity=${humidity}, windSpeed=${windSpeed}, uvIndex=${uvIndex}, climateRisk=${climateRisk}`
 )
+// ── HTTP GET: Carbon Intensity ESG Data ─────────────────────────────
+runtime.log("Fetching Carbon Intensity ESG Data")
 
+const carbonResponse = httpClient
+  .sendRequest(
+    runtime,
+    (sendRequester) => {
+      const res = sendRequester.sendRequest({
+        method: "GET",
+        url: runtime.config.carbonIntensityApiUrl,
+      }).result()
+
+      if (res.statusCode !== 200) {
+        throw new Error(`Carbon Intensity GET failed: ${res.statusCode}`)
+      }
+
+      return JSON.parse(Buffer.from(res.body).toString("utf-8"))
+    },
+    ((a: any) => a) as any,
+  )()
+  .result()
+
+const carbonData = carbonResponse.data?.[0]
+const carbonActual = Number(carbonData?.intensity?.actual ?? 0)
+const carbonForecast = Number(
+  carbonData?.intensity?.forecast ?? carbonActual
+)
+const carbonIndex = String(carbonData?.intensity?.index ?? "unknown")
+const carbonFrom = String(carbonData?.from ?? "")
+const carbonTo = String(carbonData?.to ?? "")
+
+let esgRisk = 1
+let esgAdvice = "Carbon intensity is within normal operating conditions."
+
+if (carbonIndex === "very high" || carbonForecast >= 300) {
+  esgRisk = 5
+  esgAdvice = "Very high carbon intensity. Delay non-critical energy-intensive workloads."
+} else if (carbonIndex === "high" || carbonForecast >= 200) {
+  esgRisk = 4
+  esgAdvice = "High carbon intensity. Consider reducing non-essential electricity usage."
+} else if (carbonIndex === "moderate" || carbonForecast >= 100) {
+  esgRisk = 3
+  esgAdvice = "Moderate carbon intensity. Continue monitoring grid conditions."
+} else if (carbonIndex === "low") {
+  esgRisk = 1
+  esgAdvice = "Low carbon intensity. Good time for energy-efficient operations."
+}
+
+runtime.log(
+  `ESG response: actual=${carbonActual}, forecast=${carbonForecast}, index=${carbonIndex}, esgRisk=${esgRisk}`
+)
     // ── HTTP POST: Gemini ─────────────────────────────
 const geminiSecret = runtime.getSecret({
   namespace: "GEMINI_API_KEY",
