@@ -2,6 +2,7 @@ import "./index.css";
 import { useEffect, useState } from "react";
 import { getLatestAlert, getLatestClimateAlert } from "./services/blockchain";
 import { getClimateRisk } from "./services/climate";
+import { getCarbonIntensity } from "./services/esg";
 
 import Header from "./components/Header";
 import ClimateModule from "./components/ClimateModule";
@@ -15,6 +16,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [climate, setClimate] = useState(null);
   const [chainClimate, setChainClimate] = useState(null);
+  const [esg, setEsg] = useState(null);
 
   useEffect(() => {
     async function loadAlert() {
@@ -44,11 +46,21 @@ function App() {
       } catch (err) {
         console.error(err);
       }
+    
+    async function loadEsg() {
+      try {
+        const latest = await getCarbonIntensity();
+        setEsg(latest);
+      } catch (err) {
+        console.error(err);
+      }
+    }
     }
 
     loadAlert();
     loadClimate();
     loadChainClimate();
+    loadEsg();
   }, []);
 
   return (
