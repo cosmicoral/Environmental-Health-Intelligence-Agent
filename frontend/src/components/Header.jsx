@@ -7,7 +7,7 @@ function Header() {
         </p>
 
         <h1 className="mt-3 text-6xl font-extrabold tracking-tight text-white">
-          Environmental Health Intelligence
+           TerraGuardian 
         </h1>
 
         <p className="mt-2 text-slate-400">

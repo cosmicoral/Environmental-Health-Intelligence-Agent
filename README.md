@@ -1,4 +1,5 @@
-# 🌍 Environmental Health Intelligence Agent
+# 🌍 # 🌍 TerraGuardian
+
 
 ![Solidity](https://img.shields.io/badge/Solidity-0.8.20-black)
 ![React](https://img.shields.io/badge/React-Vite-61DAFB)
@@ -6,11 +7,11 @@
 ![Gemini](https://img.shields.io/badge/Gemini-2.5-orange)
 ![Sepolia](https://img.shields.io/badge/Sepolia-Testnet-purple)
 
-An AI-powered environmental intelligence platform that combines **public health**, **climate**, and **ESG** data with **Chainlink CRE workflows**, **Gemini 2.5 Flash**, **Solidity smart contracts**, and a **React dashboard** to generate transparent environmental risk assessments.
+> **Verifiable Health, Climate & ESG Intelligence Platform**
 
-Rather than storing raw datasets or AI outputs on-chain, the platform evaluates real-world signals through a deterministic decision gate and records only high-value environmental decisions on Sepolia, creating an immutable audit trail for AI-assisted monitoring.
+TerraGuardian is an AI-powered environmental decision intelligence platform that integrates public health surveillance, climate monitoring, and ESG data into a unified risk assessment workflow.
 
-The current implementation prepares **zkVerify-ready proof metadata** before blockchain publication. Native zkVerify proof verification is planned as a future extension.
+Powered by **Chainlink CRE**, **Gemini**, **Open-Meteo**, **Carbon Intensity API**, and **zkVerify-ready proof generation**, TerraGuardian produces transparent, auditable environmental decisions that can be recorded on-chain.
 
 ---
 
@@ -19,19 +20,17 @@ The current implementation prepares **zkVerify-ready proof metadata** before blo
 <img width="1017" alt="Workflow Architecture" src="https://github.com/user-attachments/assets/b67c3b01-ea08-49d8-8734-f38edbf6c63a">
 
 ---
+## ✨ Features
 
-# Features
-
-- ✅ CDC Open Data integration
-- ✅ Open-Meteo climate monitoring
-- ✅ UK Carbon Intensity ESG monitoring
-- ✅ Gemini 2.5 Flash AI risk analysis
-- ✅ Multi-source deterministic decision gate
-- ✅ Chainlink CRE workflow simulation
-- ✅ Solidity smart contract registry
-- ✅ Sepolia deployment
-- ✅ React dashboard with live on-chain data
-- ✅ zkVerify-ready proof generation
+- 🩺 Public Health Intelligence (CDC Open Data)
+- 🌡️ Climate Risk Monitoring (Open-Meteo API)
+- ⚡ ESG Carbon Intensity Monitoring
+- 🤖 Gemini-powered Risk Assessment
+- ⚖️ Deterministic Decision Engine
+- 🔐 zkVerify-ready Proof Generation
+- ⛓️ Chainlink CRE Workflow Automation
+- 📜 On-chain Environmental Decision Registry
+- 💻 React Dashboard
 
 ---
 # Workflow
