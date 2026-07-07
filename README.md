@@ -6,101 +6,169 @@
 ![Gemini](https://img.shields.io/badge/Gemini-2.5-orange)
 ![Sepolia](https://img.shields.io/badge/Sepolia-Testnet-purple)
 
+An AI-powered environmental intelligence platform that combines **public health**, **climate**, and **ESG** data with **Chainlink CRE workflows**, **Gemini 2.5 Flash**, **Solidity smart contracts**, and a **React dashboard** to generate transparent environmental risk assessments.
 
-An AI-powered environmental intelligence agent that combines public health data, live climate observations, Chainlink CRE workflows, Gemini 2.5 Flash, Solidity smart contracts, and a React dashboard to monitor real-world risks and publish selected alerts to the Sepolia test network.
+Rather than storing raw datasets or AI outputs on-chain, the platform evaluates real-world signals through a deterministic decision gate and records only high-value environmental decisions on Sepolia, creating an immutable audit trail for AI-assisted monitoring.
 
-The project demonstrates how multiple real-world data sources can be analyzed by AI and evaluated through deterministic decision logic before being recorded on-chain.
-
-When the decision gate is triggered, the CRE workflow generates a zkVerify-ready proof package before preparing the on-chain alert. Full zkVerify proof submission is planned as a future extension.
-
---------
-## Workflow Architecture
-
-<img width="1017" height="439" alt="Workflow Architecture" src="https://github.com/user-attachments/assets/b67c3b01-ea08-49d8-8734-f38edbf6c63a">
+The current implementation prepares **zkVerify-ready proof metadata** before blockchain publication. Native zkVerify proof verification is planned as a future extension.
 
 ---
-## Features
+
+# Workflow Architecture
+
+<img width="1017" alt="Workflow Architecture" src="https://github.com/user-attachments/assets/b67c3b01-ea08-49d8-8734-f38edbf6c63a">
+
+---
+
+# Features
 
 - ✅ CDC Open Data integration
 - ✅ Open-Meteo climate monitoring
-- ✅ Gemini 2.5 Flash risk analysis
-- ✅ Dual-source decision gate
+- ✅ UK Carbon Intensity ESG monitoring
+- ✅ Gemini 2.5 Flash AI risk analysis
+- ✅ Multi-source deterministic decision gate
 - ✅ Chainlink CRE workflow simulation
 - ✅ Solidity smart contract registry
 - ✅ Sepolia deployment
 - ✅ React dashboard with live on-chain data
+- ✅ zkVerify-ready proof generation
 
 ---
 
 # Workflow
 
-```
-
-CDC Open Data        Open-Meteo API
-       \               /
-        \             /
-         ▼           ▼
-      Gemini Analysis
-              │
-              ▼
-      Decision Gate
-              │
-              ▼
-     Chainlink CRE Workflow
-              │
-              ▼
-   HealthAlertRegistry.sol
-              │
-              ▼
-           Sepolia
-              │
-              ▼
-      React Dashboard
-
+```text
+ CDC Open Data        Open-Meteo API      Carbon Intensity API
+        \                   |                    /
+         \                  |                   /
+          +-----------------+------------------+
+                            |
+                    Gemini AI Analysis
+                            |
+                            ▼
+              Deterministic Decision Gate
+                            |
+                Generate Proof Metadata
+                            |
+                 zkVerify-ready Proof
+                            |
+                  Chainlink CRE Workflow
+                            |
+                            ▼
+             HealthAlertRegistry.sol
+                            |
+                         Sepolia
+                            |
+                    React Dashboard
 ```
 
 ---
-## Current Agent Workflow
 
-1. A Chainlink CRE workflow starts the monitoring process.
+# Current Agent Workflow
+
+1. Chainlink CRE starts the monitoring workflow.
 
 2. Fetch public health data from CDC Open Data.
 
 3. Fetch live weather observations from Open-Meteo.
 
-4. Gemini evaluates health-related indicators.
+4. Fetch live UK electricity carbon intensity.
 
-5. A deterministic decision gate evaluates:
+5. Gemini analyzes public health indicators.
 
-   - Health risk
+6. A deterministic decision gate evaluates:
+
+   - Public health risk
    - Climate risk
+   - ESG carbon intensity
 
-6. If either threshold is exceeded:
+7. If one or more thresholds are exceeded:
 
-   - prepare the alert payload
-   - publish to the deployed Solidity contract on Sepolia
+   - generate proof metadata
+   - prepare a verification-ready attestation
+   - publish an alert through the deployed Solidity contract
 
-7. Otherwise:
+8. Otherwise:
 
    - skip blockchain publication
 
-8. The React dashboard reads the latest alerts directly from the deployed smart contract.
+9. The React dashboard reads the latest alerts directly from the deployed Sepolia contract.
+
+---
 
 # Agent Decision Logic
 
-The workflow evaluates two independent signals before publishing an alert.
+Three independent signals are evaluated before any blockchain transaction is created.
 
-Health Decision
+## Public Health
 
-AI riskScore >= alertThreshold
+```
+riskScore >= healthThreshold
+```
 
-Climate Decision
+## Climate
 
+```
 climateRisk >= climateThreshold
+```
 
-If either condition evaluates to true, the workflow prepares an encoded report and publishes it through Chainlink CRE to the HealthAlertRegistry contract on Sepolia.
+## ESG
 
-Otherwise the workflow exits without generating an on-chain transaction.
+```
+carbonIntensity >= esgThreshold
+```
+
+If one or more conditions are satisfied:
+
+```text
+Generate Proof Metadata
+        ↓
+zkVerify-ready Attestation
+        ↓
+Chainlink CRE Workflow
+        ↓
+HealthAlertRegistry.sol
+        ↓
+Sepolia
+```
+
+Otherwise the workflow exits without creating an on-chain transaction.
+
+---
+
+# Why Blockchain?
+
+Large datasets and AI inference remain off-chain.
+
+Only high-value environmental decisions are recorded on-chain together with timestamps and proof metadata.
+
+This provides:
+
+- Immutable audit trail
+- Public accountability
+- Tamper-resistant environmental decisions
+- Transparent AI-assisted governance
+
+Rather than asking users to trust an AI model directly, the blockchain provides a transparent record of the final environmental decision.
+
+---
+
+# Why zkVerify?
+
+The goal of zkVerify is **not** to prove that Gemini is "correct".
+
+Instead, zkVerify verifies that the environmental decision workflow executed according to deterministic rules and that the generated proof has not been altered before publication.
+
+Current implementation:
+
+- Proof metadata generation
+- Verification-ready attestation
+
+Future implementation:
+
+- Native zkVerify proof submission
+- Verification receipt
+- On-chain proof confirmation
 
 ---
 
@@ -108,120 +176,129 @@ Otherwise the workflow exits without generating an on-chain transaction.
 
 `HealthAlertRegistry.sol`
 
-## Functions
+## Main Functions
 
 ### recordAlert()
 
-Stores a manually submitted health alert.
+Stores an environmental health alert.
+
+### recordClimateAlert()
+
+Stores a climate alert.
 
 ### onReport()
 
-Receives encoded reports from Chainlink CRE.
+Receives reports generated by Chainlink CRE.
 
-### getAlert()
+### getLatestAlert()
 
-Returns a specific alert.
+Returns the latest public health alert.
 
-### getAlertCount()
+### getLatestClimateAlert()
 
-Returns the total number of alerts.
+Returns the latest climate alert.
 
 ---
 
 # Dashboard
 
-Dashboard modules
+Current dashboard modules
 
-• Public Health Intelligence
+- 🦠 Public Health Intelligence
+- 🌡️ Climate Risk Intelligence
+- 🌱 ESG Carbon Intelligence
+- 🧠 Agent Decision Gate
+- 🔄 Workflow Visualization
+- ⛓️ On-chain Registry
+- 🤖 AI Summary
 
-• Climate Risk Intelligence
-
-• Agent Decision Gate
-
-• Workflow Visualization
-
-• On-chain Registry
-
-• AI Summary
-
-All displayed data is read directly from the deployed Sepolia contract using **viem**.
+The dashboard retrieves blockchain data directly from the deployed Sepolia contract using **ethers.js**.
 
 ---
 
 # Tech Stack
 
-### Blockchain
+## Blockchain
 
 - Solidity
-
 - Sepolia
+- ethers.js
 
-- Viem
-
-### AI
+## AI
 
 - Gemini 2.5 Flash
 
-### Chainlink
+## Chainlink
 
 - Chainlink CRE
-
 - Scaffold CRE
 
-### Frontend
+## Frontend
 
 - React
-
 - Vite
+- Tailwind CSS
 
-### Data
+## Data Sources
 
 - CDC Open Data API
 - Open-Meteo Weather API
-
-### Future
-
-Future
-
-- EU Climate Data
-
-- Copernicus Climate Service
-
-- Air Quality APIs
-
-- Flood Monitoring
-
-- Wildfire Monitoring
-
-- zkVerify
-
-- The Graph
-
-- ESG Indicators
+- UK National Grid Carbon Intensity API
 
 ---
 
 # Project Status
 
 | Component | Status |
-
 |-----------|--------|
-
 | CDC API | ✅ |
-
+| Open-Meteo API | ✅ |
+| Carbon Intensity API | ✅ |
 | Gemini Analysis | ✅ |
-
+| ESG Module | ✅ |
 | Chainlink CRE Workflow | ✅ |
-
 | Workflow Simulation | ✅ |
-
 | Solidity Contract | ✅ |
-
-| Frontend ↔ Solidity | ✅ |
-
+| Frontend ↔ Smart Contract | ✅ |
 | Sepolia Deployment | ✅ |
-
+| zkVerify-ready Proof | ✅ |
+| Native zkVerify Integration | ⏳ Planned |
 | CRE Deployment Access | ⏳ Waiting |
+
+---
+
+# Repository Structure
+
+```text
+contracts/
+    HealthAlertRegistry.sol
+
+frontend/
+    src/
+        components/
+        services/
+
+workflow-environmental-health-intelligence-agent/
+    workflow.ts
+    workflow.yaml
+```
+
+---
+
+# Current Demo
+
+The current prototype evaluates public health, climate, and ESG signals before deciding whether an environmental alert should be published on-chain.
+
+| Component | Current Demo |
+|-----------|--------------|
+| Public Health | CDC Open Data |
+| Climate | Open-Meteo |
+| ESG | UK Carbon Intensity API |
+| AI Model | Gemini 2.5 Flash |
+| Decision Gate | Health + Climate + ESG |
+| Workflow Engine | Chainlink CRE |
+| Blockchain | Sepolia |
+| Smart Contract | HealthAlertRegistry.sol |
 
 ---
 
@@ -230,99 +307,38 @@ Future
 ## Phase 1 — Public Health
 
 - Disease outbreak monitoring
-
 - AI-generated summaries
-
-- On-chain registry
+- Automated CRE deployment
 
 ## Phase 2 — Environmental Intelligence
 
 - Heatwave monitoring
-
 - Air quality
-
 - Water quality
-
 - Wildfire monitoring
 
-## Phase 3 — ESG
+## Phase 3 — ESG Intelligence
 
-- Carbon monitoring
-
-- Renewable energy
-
-- Sustainability indicators
+- Renewable energy indicators
+- Grid sustainability metrics
+- EU environmental datasets
+- Copernicus integration
 
 ## Phase 4 — Verifiable AI
 
-- zkVerify
-
-- Proof-backed AI outputs
-
-- Cross-chain verification
-
----
-
-# Repository Structure
-
-```
-
-contracts/
-
-    HealthAlertRegistry.sol
-
-frontend/
-
-    src/
-
-        services/
-
-        components/
-
-workflow-environmental-health-intelligence-agent/
-
-    workflow.ts
-
-    config/
-
-    workflow.yaml
-
-```
+- Native zkVerify integration
+- Proof verification
+- On-chain proof confirmation
+- Explorer verification
 
 ---
 
-# Current Demo
+# Vision
 
-The current prototype monitors both public health and climate signals before deciding whether an on-chain alert should be published.
+We do **not** put AI on-chain.
 
-| Component | Current Demo |
-|-----------|--------------|
-| Health Source | CDC Open Data |
-| Climate Source | Open-Meteo Weather API |
-| AI Model | Gemini 2.5 Flash |
-| Decision Gate | Health Risk + Climate Risk Threshold |
-| Workflow Engine | Chainlink CRE |
-| Blockchain | Sepolia Testnet |
-| Smart Contract | HealthAlertRegistry.sol |
+We put **trust on-chain**.
 
-### Example Output
+Raw datasets, weather observations, ESG metrics, and AI inference remain off-chain for efficiency, while blockchain stores only verifiable environmental decisions together with immutable timestamps and proof metadata.
 
-| Field | Value |
-|------|------|
-| Disease | COVID-19 |
-| Region | United States |
-| AI Risk Score | 13 / 100 |
-| London Temperature | 21.4 °C |
-| Humidity | 64 % |
-| UV Index | 0 |
-| Climate Risk | 1 / 5 (Low) |
-| Data Source | CDC Open Data + Open-Meteo + Gemini |
-| Workflow Decision | Skipped (Below Thresholds) |
-| Network | Sepolia |
-
----
-
-# Next Milestone
-
-After Chainlink approves deployment access, this workflow will transition from local simulation to a fully deployed Chainlink CRE workflow capable of automatically writing AI-generated public health alerts to the Sepolia blockchain.
-Current implementation prepares proof metadata and verification-ready attestations. Full zkVerify proof submission is planned as the next milestone.
+This architecture combines AI scalability with blockchain transparency, creating a verifiable environmental intelligence workflow suitable for future public-sector, climate-tech, and AI governance applications.
