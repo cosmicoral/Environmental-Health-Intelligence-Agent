@@ -34,34 +34,51 @@ The current implementation prepares **zkVerify-ready proof metadata** before blo
 - ✅ zkVerify-ready proof generation
 
 ---
-
 # Workflow
 
 ```text
- CDC Open Data        Open-Meteo API      Carbon Intensity API
-        \                   |                    /
-         \                  |                   /
-          +-----------------+------------------+
-                            |
-                    Gemini AI Analysis
-                            |
-                            ▼
-              Deterministic Decision Gate
-                            |
-                Generate Proof Metadata
-                            |
-                 zkVerify-ready Proof
-                            |
-                  Chainlink CRE Workflow
-                            |
-                            ▼
-             HealthAlertRegistry.sol
-                            |
-                         Sepolia
-                            |
-                    React Dashboard
+                 CDC Open Data
+                      │
+                      ▼
+        Gemini Health Risk Analysis
+
+Open-Meteo API                    Carbon Intensity API
+      │                                   │
+      ▼                                   ▼
+Climate Risk Logic                 ESG Risk Logic
+      │                                   │
+      └───────────────┬───────────────────┘
+                      │
+                      ▼
+        Deterministic Decision Gate
+      (Health + Climate + ESG Signals)
+                      │
+                      ▼
+      Generate Proof Package Metadata
+                      │
+                      ▼
+     zkVerify-ready Verification Package
+                      │
+                      ▼
+          Chainlink CRE Workflow
+                      │
+                      ▼
+        HealthAlertRegistry.sol
+                      │
+                      ▼
+            Ethereum Sepolia
+                      │
+                      ▼
+             React Dashboard
 ```
 
+The platform combines **AI inference** with **deterministic decision logic**.
+
+- **Gemini 2.5 Flash** analyzes public health data from CDC Open Data.
+- **Climate Risk Logic** evaluates live weather conditions from Open-Meteo.
+- **ESG Risk Logic** evaluates UK grid carbon intensity from the Carbon Intensity API.
+- A deterministic **Decision Gate** aggregates all three signals before generating a verification-ready proof package.
+- Chainlink CRE publishes approved alerts to the deployed Solidity smart contract on Ethereum Sepolia.
 ---
 
 # Current Agent Workflow
