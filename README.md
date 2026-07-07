@@ -12,6 +12,7 @@ An AI-powered environmental intelligence agent that combines public health data,
 The project demonstrates how multiple real-world data sources can be analyzed by AI and evaluated through deterministic decision logic before being recorded on-chain.
 
 When the decision gate is triggered, the CRE workflow generates a zkVerify-ready proof package before preparing the on-chain alert. Full zkVerify proof submission is planned as a future extension.
+
 --------
 ## Workflow Architecture
 
