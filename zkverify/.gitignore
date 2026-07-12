@@ -1,0 +1,7 @@
+pot*.ptau
+
+build/*.zkey
+build/*.wtns
+build/*.r1cs
+build/*.sym
+build/decision_hash_js/**
