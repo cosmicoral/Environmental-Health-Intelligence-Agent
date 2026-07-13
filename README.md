@@ -16,11 +16,6 @@ Powered by **Chainlink CRE**, **Gemini**, **Open-Meteo**, **Carbon Intensity API
 
 ---
 
-# Workflow Architecture
-
-<img width="1017" alt="Workflow Architecture" src="https://github.com/user-attachments/assets/b67c3b01-ea08-49d8-8734-f38edbf6c63a">
-
----
 ## ✨ Features
 
 - 🩺 Public Health Intelligence (CDC Open Data)
