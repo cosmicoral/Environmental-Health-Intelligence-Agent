@@ -1,0 +1,9 @@
+pot*.ptau
+.env
+
+verification-result.json
+build/*.zkey
+build/*.wtns
+build/*.r1cs
+build/*.sym
+build/decision_hash_js/**
