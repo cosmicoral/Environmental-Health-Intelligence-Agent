@@ -6,12 +6,13 @@
 ![Chainlink](https://img.shields.io/badge/Chainlink-CRE-blue)
 ![Gemini](https://img.shields.io/badge/Gemini-2.5-orange)
 ![Sepolia](https://img.shields.io/badge/Sepolia-Testnet-purple)
+![zkVerify](https://img.shields.io/badge/zkVerify-Volta-success)
 
 > **Verifiable Health, Climate & ESG Intelligence Platform**
 
 TerraGuardian is an AI-powered environmental decision intelligence platform that integrates public health surveillance, climate monitoring, and ESG data into a unified risk assessment workflow.
 
-Powered by **Chainlink CRE**, **Gemini**, **Open-Meteo**, **Carbon Intensity API**, and **zkVerify-ready proof generation**, TerraGuardian produces transparent, auditable environmental decisions that can be recorded on-chain.
+Powered by **Chainlink CRE**, **Gemini**, **Open-Meteo**, **Carbon Intensity API**, and **native zkVerify Groth16 verification**, TerraGuardian produces transparent, auditable environmental decisions that can be independently verified before publication on-chain.
 
 ---
 
@@ -27,7 +28,7 @@ Powered by **Chainlink CRE**, **Gemini**, **Open-Meteo**, **Carbon Intensity API
 - ⚡ ESG Carbon Intensity Monitoring
 - 🤖 Gemini-powered Risk Assessment
 - ⚖️ Deterministic Decision Engine
-- 🔐 zkVerify-ready Proof Generation
+- 🔐 Native zkVerify Groth16 Verification
 - ⛓️ Chainlink CRE Workflow Automation
 - 📜 On-chain Environmental Decision Registry
 - 💻 React Dashboard
@@ -53,12 +54,18 @@ Climate Risk Logic                 ESG Risk Logic
       (Health + Climate + ESG Signals)
                       │
                       ▼
-      Generate Proof Package Metadata
+              Generate Groth16 Proof
                       │
                       ▼
-     zkVerify-ready Verification Package
-                      │
-                      ▼
+                Submit Proof to zkVerify Volta
+                       │
+                       ▼
+                Proof Finalized
+                       │
+                       ▼
+                Statement Hash
+                       │
+                       ▼
           Chainlink CRE Workflow
                       │
                       ▼
@@ -76,7 +83,7 @@ The platform combines **AI inference** with **deterministic decision logic**.
 - **Gemini 2.5 Flash** analyzes public health data from CDC Open Data.
 - **Climate Risk Logic** evaluates live weather conditions from Open-Meteo.
 - **ESG Risk Logic** evaluates UK grid carbon intensity from the Carbon Intensity API.
-- A deterministic **Decision Gate** aggregates all three signals before generating a verification-ready proof package.
+- A deterministic Decision Gate aggregates all three signals before generating a Groth16 zero-knowledge proof that is independently verified by zkVerify Volta.
 - Chainlink CRE publishes approved alerts to the deployed Solidity smart contract on Ethereum Sepolia.
 ---
 
@@ -100,9 +107,10 @@ The platform combines **AI inference** with **deterministic decision logic**.
 
 7. If one or more thresholds are exceeded:
 
-   - generate proof metadata
-   - prepare a verification-ready attestation
-   - publish an alert through the deployed Solidity contract
+   - generate a Groth16 proof
+   - submit the proof to zkVerify Volta
+   - receive a finalized statement hash
+   - publish a verified environmental decision through the deployed Solidity contract
 
 8. Otherwise:
 
@@ -137,15 +145,19 @@ carbonIntensity >= esgThreshold
 If one or more conditions are satisfied:
 
 ```text
-Generate Proof Metadata
+Generate Groth16 Proof
         ↓
-zkVerify-ready Attestation
+Submit to zkVerify Volta
+        ↓
+Proof Finalized
+        ↓
+Statement Hash
         ↓
 Chainlink CRE Workflow
         ↓
 HealthAlertRegistry.sol
         ↓
-Sepolia
+Ethereum Sepolia
 ```
 
 Otherwise the workflow exits without creating an on-chain transaction.
@@ -156,7 +168,7 @@ Otherwise the workflow exits without creating an on-chain transaction.
 
 Large datasets and AI inference remain off-chain.
 
-Only high-value environmental decisions are recorded on-chain together with timestamps and proof metadata.
+Only high-value environmental decisions together with proof verification results and immutable timestamps are recorded on-chain.
 
 This provides:
 
@@ -168,23 +180,30 @@ This provides:
 Rather than asking users to trust an AI model directly, the blockchain provides a transparent record of the final environmental decision.
 
 ---
-
 # Why zkVerify?
 
 The goal of zkVerify is **not** to prove that Gemini is "correct".
 
-Instead, zkVerify verifies that the environmental decision workflow executed according to deterministic rules and that the generated proof has not been altered before publication.
+Instead, TerraGuardian generates a **Groth16 zero-knowledge proof** representing its deterministic environmental decision workflow.
 
-Current implementation:
+The proof is submitted to **zkVerify Volta Testnet**, where it is independently verified before producing a finalized **statement hash**.
 
-- Proof metadata generation
-- Verification-ready attestation
+## Current implementation
 
-Future implementation:
+- ✅ Groth16 circuit
+- ✅ Witness generation
+- ✅ Local proof generation
+- ✅ Local proof verification
+- ✅ Native zkVerify Volta submission
+- ✅ Proof finalized
+- ✅ Statement hash generated
 
-- Native zkVerify proof submission
-- Verification receipt
-- On-chain proof confirmation
+## Future implementation
+
+- Aggregation receipts
+- Merkle inclusion proofs
+- Cross-chain proof verification
+- On-chain receipt verification
 
 ---
 
@@ -214,6 +233,10 @@ Returns the latest public health alert.
 
 Returns the latest climate alert.
 
+### recordEnvironmentalDecisionAlert()
+
+Stores a verified environmental decision together with its proof hash and multi-source risk assessment.
+
 ---
 
 # Dashboard
@@ -223,10 +246,10 @@ Current dashboard modules
 - 🦠 Public Health Intelligence
 - 🌡️ Climate Risk Intelligence
 - 🌱 ESG Carbon Intelligence
-- 🧠 Agent Decision Gate
-- 🔄 Workflow Visualization
+- 🧠 AI Risk Summary
+- ⚖️ Decision Gate
+- 🔐 zkVerify Verification Status
 - ⛓️ On-chain Registry
-- 🤖 AI Summary
 
 The dashboard retrieves blockchain data directly from the deployed Sepolia contract using **ethers.js**.
 
@@ -261,6 +284,13 @@ The dashboard retrieves blockchain data directly from the deployed Sepolia contr
 - Open-Meteo Weather API
 - UK National Grid Carbon Intensity API
 
+## Zero Knowledge
+- Circom
+- Groth16
+- snarkjs
+- zkVerifyJS
+- zkVerify Volta
+
 ---
 
 # Project Status
@@ -277,8 +307,14 @@ The dashboard retrieves blockchain data directly from the deployed Sepolia contr
 | Solidity Contract | ✅ |
 | Frontend ↔ Smart Contract | ✅ |
 | Sepolia Deployment | ✅ |
-| zkVerify-ready Proof | ✅ |
-| Native zkVerify Integration | ⏳ Planned |
+| Groth16 Circuit | ✅ |
+| Proof Generation | ✅ |
+| Local Proof Verification | ✅ |
+| zkVerify Volta Submission | ✅ |
+| zkVerify Finalization | ✅ |
+| Statement Hash | ✅ |
+| Aggregation Receipt | ⏳ Planned |
+| Destination-chain Verification | ⏳ Planned |
 | CRE Deployment Access | ⏳ Waiting |
 
 ---
@@ -297,6 +333,12 @@ frontend/
 workflow-environmental-health-intelligence-agent/
     workflow.ts
     workflow.yaml
+
+zkverify/
+    circuits/
+    build/
+    generate-input.js
+    submit-proof.js
 ```
 
 ---
@@ -315,8 +357,24 @@ The current prototype evaluates public health, climate, and ESG signals before d
 | Workflow Engine | Chainlink CRE |
 | Blockchain | Sepolia |
 | Smart Contract | HealthAlertRegistry.sol |
+| zkVerify Network | Volta Testnet |
+| Proof System | Groth16 |
+| Proof Status | ✅ Finalized |
 
 ---
+# zkVerify Verification
+
+Latest verification result
+
+| Item | Value |
+|------|------|
+| Network | zkVerify Volta Testnet |
+| Proof System | Groth16 |
+| Status | ✅ Finalized |
+| Transaction Hash | `0x942a124065c32cf758be3c90caaf562545e7b58cee1bba950e4a909747029a2f` |
+| Statement Hash | `0xcb17b4b45cc94c05670e0f43c691143fce6f391d88adf7802bd28e2bf1baede5` |
+
+----
 
 # Future Roadmap
 
@@ -342,10 +400,10 @@ The current prototype evaluates public health, climate, and ESG signals before d
 
 ## Phase 4 — Verifiable AI
 
-- Native zkVerify integration
-- Proof verification
-- On-chain proof confirmation
-- Explorer verification
+- Aggregation receipts
+- Cross-chain verification
+- On-chain receipt verification
+- Production deployment
 
 ---
 
@@ -353,8 +411,8 @@ The current prototype evaluates public health, climate, and ESG signals before d
 
 We do **not** put AI on-chain.
 
-We put **trust on-chain**.
+We put **verifiable trust on-chain**.
 
-Raw datasets, weather observations, ESG metrics, and AI inference remain off-chain for efficiency, while blockchain stores only verifiable environmental decisions together with immutable timestamps and proof metadata.
+Raw datasets, weather observations, ESG metrics, and AI inference remain off-chain for efficiency, while blockchain stores only verifiable environmental decisions together with immutable timestamps and zkVerify proof verification results.
 
 This architecture combines AI scalability with blockchain transparency, creating a verifiable environmental intelligence workflow suitable for future public-sector, climate-tech, and AI governance applications.
