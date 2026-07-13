@@ -2,224 +2,214 @@
 
 # TerraGuardian
 
-### Environmental decision intelligence with explicit trust boundaries
+### Encode Club Remix AI Bootcamp final project for transparent environmental decision intelligence
 
-TerraGuardian combines public-health, climate, and electricity carbon-intensity signals in a Chainlink CRE workflow, applies deterministic publication rules, and prepares an Ethereum Sepolia report when a configured threshold is met.
+**TerraGuardian is the final project developed for the Encode Club Remix AI Bootcamp (Remix AI Bootcamp for Real World Impact).**
 
-The repository also includes an **independent Groth16 proof demonstration** finalized on zkVerify Volta. The proof pipeline is not currently invoked by CRE and does not gate publication.
+TerraGuardian combines a Chainlink CRE workflow, a Solidity demonstration registry, a React dashboard, and a separate Groth16 submission example. The repository keeps those systems distinct: the current CRE workflow does not generate a proof, call zkVerify, or use a zkVerify result to authorize a Sepolia write.
 
-[![Solidity](https://img.shields.io/badge/Solidity-0.8.20-111827?style=flat-square)](contracts/HealthAlertRegistry.sol)
+[![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-111827?style=flat-square)](contracts/HealthAlertRegistry.sol)
 [![React](https://img.shields.io/badge/React-19-0B7285?style=flat-square)](frontend/)
 [![Chainlink](https://img.shields.io/badge/Chainlink-CRE-2A5ADA?style=flat-square)](workflow-environmental-health-intelligence-agent/)
 [![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-7C3AED?style=flat-square)](workflow-environmental-health-intelligence-agent/workflow.ts)
 [![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-4F46E5?style=flat-square)](contracts/HealthAlertRegistry.sol)
-[![zkVerify](https://img.shields.io/badge/zkVerify-Volta_demo-6D28D9?style=flat-square)](zkverify/)
+[![zkVerify](https://img.shields.io/badge/zkVerify-Volta_historical_demo-6D28D9?style=flat-square)](zkverify/)
 
 </div>
 
 ---
 
-## Executive summary
+## Project status
 
-Environmental monitoring systems often combine multiple trust models: external APIs, probabilistic AI output, deterministic policy, distributed workflow execution, public-chain storage, and zero-knowledge verification. TerraGuardian keeps those boundaries visible instead of presenting them as one indistinguishable “verified AI” system.
+The labels below describe repository evidence, not production readiness.
 
-The current project demonstrates four related but deliberately separate components:
-
-1. **Chainlink CRE workflow** — collects data, requests a Gemini health analysis, validates responses, evaluates deterministic thresholds, and prepares a signed CRE report.
-2. **Ethereum Sepolia registry** — stores demonstration health, climate, and environmental-decision records.
-3. **React intelligence dashboard** — reads public chain state and live environmental APIs without requiring wallet access.
-4. **Independent Groth16 / zkVerify pipeline** — proves knowledge of a Poseidon preimage for a fixed sample input and submits that proof to zkVerify Volta.
-
-> [!IMPORTANT]
-> zkVerify does **not** currently verify the CRE decision, authenticate Gemini output, or authorize the Sepolia write. The submitted Groth16 proof is an independent historical demonstration.
-
----
-
-## What is implemented
-
-| Capability | Status | Current behavior |
-|---|---:|---|
-| CDC Open Data collection | **Implemented** | Fetches a small public-health dataset through the CRE HTTP capability. |
-| Open-Meteo collection | **Implemented** | Fetches current London temperature, humidity, wind speed, and UV index. |
-| UK Carbon Intensity collection | **Implemented** | Fetches current and forecast grid carbon intensity. |
-| Gemini health analysis | **Implemented** | Requests a structured health-risk assessment and validates it with Zod. |
-| Deterministic Decision Gate | **Implemented** | Publishes when health **OR** climate **OR** carbon risk reaches its threshold. |
-| CRE report construction | **Implemented** | ABI-encodes the health record and creates an ECDSA/Keccak CRE report. |
-| Sepolia report target | **Implemented** | Workflow configuration points to a deployed demonstration registry. |
-| CRE workflow compilation | **Implemented** | Type-checks and compiles to CRE-compatible WASM. |
-| Scheduled CRE deployment | **Prototype boundary** | Workflow code and schedule are present; continuous hosted execution is not claimed. |
-| Solidity demonstration registry | **Implemented** | Stores permissionless caller-submitted records on Sepolia. |
-| Read-only React dashboard | **Implemented** | Reads Sepolia through a public RPC and fetches live environmental APIs. |
-| Groth16 sample proof | **Implemented** | Includes proof, public signal, and verification key artifacts. |
-| zkVerify Volta submission | **Historical demo** | One independent proof submission reached finalization. |
-| CRE → zkVerify orchestration | **Not implemented** | No proof is created or submitted from `workflow.ts`. |
-| zkVerify-gated CRE publication | **Not implemented** | CRE does not wait for or consume a zkVerify result. |
-| On-chain zkVerify receipt verification | **Future work** | No aggregation receipt or inclusion proof is verified by the registry. |
+| Capability | Status | Repository evidence and boundary |
+|---|---|---|
+| CDC data request | Implemented | The CRE workflow requests three rows from CDC dataset `6jg4-xsqq`, a COVID-NET hospitalization-rate dataset. |
+| Open-Meteo request | Implemented | The workflow requests current London temperature, relative humidity, 10 m wind speed, and UV index. |
+| Carbon Intensity request | Implemented | The workflow requests current Great Britain grid-intensity data and uses actual, forecast, and index values. |
+| Gemini analysis | Implemented | Gemini 2.5 Flash receives the CDC response and returns a structured health assessment that is parsed with Zod. Climate and carbon data are not sent to Gemini. |
+| Deterministic Decision Gate | Implemented | Health, climate, and carbon-derived risk values are compared with explicit thresholds using an OR rule. |
+| CRE report construction | Implemented in workflow code | The workflow ABI-encodes a health-alert payload and requests an ECDSA/Keccak CRE report. |
+| Sepolia write | Configured code path | `writeReport` targets the configured Sepolia address when the gate passes. The repository does not include a CRE execution transaction proving that this path completed successfully. |
+| Scheduled hosted CRE execution | Not evidenced | A ten-minute cron schedule and CRE configuration are checked in; continuous deployment or hosted execution is not claimed. |
+| Solidity registry source | Implemented | The contract source defines append-only health, climate, and combined-decision record types with permissionless write functions. |
+| Configured Sepolia registry | Configured address | The workflow and frontend use the same address. The repository does not include a deployment manifest that binds the current contract artifact to that address. |
+| React dashboard | Implemented | The UI reads health and climate records through a public Sepolia RPC and requests live climate and carbon data without wallet approval. |
+| Groth16 circuit | Implemented | The Circom circuit constrains one Poseidon preimage relation. |
+| Proof artifacts | Checked in | A Groth16 proof, public signal, and verification key are present and can be verified locally with snarkjs. |
+| Reproducible proof-generation workflow | Incomplete | The repository generates the sample input but does not include scripts for circuit compilation, trusted setup, witness generation, or proof generation. |
+| zkVerify Volta submission | Historical artifact | A checked-in summary records one finalized verify-only submission. The React app displays a copy of this metadata. |
+| CRE-to-zkVerify orchestration | Not implemented | `workflow.ts` never invokes the circuit, snarkjs, or zkVerify. |
+| zkVerify-gated publication | Not implemented | Neither the workflow nor the contract consumes a zkVerify statement, receipt, or inclusion proof. |
 
 ---
 
 ## Architecture
 
-### System boundaries
-
 ```mermaid
 flowchart LR
-    subgraph Sources["External data sources"]
-        CDC["CDC Open Data"]
+    subgraph Sources["External sources"]
+        CDC["CDC COVID-NET data"]
         Weather["Open-Meteo"]
-        Carbon["UK Carbon Intensity API"]
+        Carbon["Carbon Intensity API"]
+        Gemini["Gemini 2.5 Flash"]
     end
 
-    subgraph CRE["Chainlink CRE workflow"]
-        Collect["Validated data collection"]
-        Gemini["Gemini health analysis"]
-        Rules["Deterministic Decision Gate"]
-        Report["CRE report construction"]
+    subgraph Workflow["Chainlink CRE workflow"]
+        Health["Health assessment"]
+        Climate["Deterministic climate risk"]
+        ESG["Deterministic carbon risk"]
+        Gate["Decision Gate: health OR climate OR carbon"]
+        Report["ABI payload and CRE report"]
     end
 
-    subgraph Ethereum["Ethereum Sepolia"]
-        Registry["HealthAlertRegistry.sol"]
+    subgraph Ethereum["Configured Sepolia path"]
+        Registry["Registry address"]
     end
 
-    subgraph UI["React dashboard"]
-        Dashboard["Environmental intelligence UI"]
+    subgraph Frontend["React dashboard"]
+        UI["Read-only environmental dashboard"]
+        Preview["Client-side decision preview"]
     end
 
-    CDC --> Collect
-    Weather --> Collect
-    Carbon --> Collect
-    Collect --> Gemini
-    Gemini --> Rules
-    Rules -->|"threshold met"| Report
-    Rules -->|"no threshold met"| Skip["Skip publication"]
-    Report --> Registry
-    Registry --> Dashboard
-    Weather -. "live fallback" .-> Dashboard
-    Carbon -. "live display" .-> Dashboard
+    CDC --> Gemini --> Health --> Gate
+    Weather --> Climate --> Gate
+    Carbon --> ESG --> Gate
+    Gate -->|"threshold met"| Report
+    Gate -->|"no threshold met"| Skip["Skip report"]
+    Report -->|"writeReport target"| Registry
+    Registry -->|"health and climate reads"| UI
+    Weather -.->|"live fallback"| UI
+    Carbon -.->|"live data"| UI
+    UI --> Preview
+
+    subgraph ProofDemo["Independent proof demonstration"]
+        Input["Fixed sample input"] --> Circuit["Circom Poseidon constraint"]
+        Circuit --> Artifacts["Checked-in Groth16 artifacts"]
+        Artifacts --> Volta["Historical zkVerify Volta submission"]
+    end
 ```
 
-The dashboard can combine the latest health record, an optional recorded climate alert, and live carbon data. These values may have different timestamps. Its Decision Gate visualization is therefore described as a **client-side policy preview**, not as a receipt for one CRE execution.
-
-### Independent proof demonstration
-
-```mermaid
-flowchart LR
-    Scores["Fixed sample scores\n85 · 3 · 4"]
-    Encode["Encode as 850304"]
-    Poseidon["Poseidon commitment"]
-    Circuit["Circom constraint"]
-    Proof["Groth16 proof\nsnarkjs / bn128"]
-    Volta["zkVerify Volta\nverify-only submission"]
-    Statement["Finalized statement hash"]
-
-    Scores --> Encode --> Poseidon
-    Encode --> Circuit
-    Poseidon --> Circuit
-    Circuit --> Proof
-    Proof --> Volta --> Statement
-```
-
-```mermaid
-flowchart TB
-    CREPath["CRE publication pipeline"]
-    ProofPath["Independent Groth16 demo"]
-    Boundary["No runtime integration"]
-
-    CREPath -.-> Boundary
-    ProofPath -.-> Boundary
-```
-
-There is currently no code path that transfers a CRE decision payload into `zkverify/`, invokes proof generation from the workflow, or returns a zkVerify result to the CRE report.
+The two paths share product context only. No runtime handoff exists between the CRE workflow and `zkverify/`.
 
 ---
 
 ## Chainlink CRE workflow
 
-The CRE implementation lives in [`workflow-environmental-health-intelligence-agent/workflow.ts`](workflow-environmental-health-intelligence-agent/workflow.ts).
+The workflow is implemented in [`workflow-environmental-health-intelligence-agent/workflow.ts`](workflow-environmental-health-intelligence-agent/workflow.ts). Both checked-in configurations schedule it every ten minutes and select Ethereum Sepolia.
 
-### Execution sequence
+### Execution path
 
-```mermaid
-sequenceDiagram
-    participant Cron as CRE Cron Trigger
-    participant CDC as CDC API
-    participant Weather as Open-Meteo
-    participant Carbon as Carbon Intensity API
-    participant AI as Gemini 2.5 Flash
-    participant Gate as Decision Gate
-    participant CRE as CRE Report API
-    participant EVM as Sepolia Registry
+1. Fetch the configured CDC response.
+2. Fetch current London conditions from Open-Meteo and calculate climate risk from temperature and UV index.
+3. Fetch current Great Britain carbon-intensity data and calculate carbon risk from forecast intensity and the API index.
+4. Send only the CDC response to Gemini for a health-risk assessment.
+5. Evaluate the deterministic Decision Gate.
+6. If any threshold is met, build the health-alert payload, create a CRE report, and call `writeReport` with the configured Sepolia receiver address.
+7. Otherwise, return `Skipped` without creating a report.
 
-    Cron->>CDC: Fetch public-health data
-    CDC-->>Cron: Validated JSON
-    Cron->>Weather: Fetch current London conditions
-    Weather-->>Cron: Validated climate values
-    Cron->>Carbon: Fetch grid intensity
-    Carbon-->>Cron: Validated carbon values
-    Cron->>AI: Request structured health analysis
-    AI-->>Cron: Validated score, disease, region, summary
-    Cron->>Gate: Evaluate health, climate, carbon rules
-
-    alt Any threshold is met
-        Gate->>CRE: ABI-encoded health record
-        CRE->>EVM: Signed CRE report
-    else No threshold is met
-        Gate-->>Cron: Skip publication
-    end
-```
+The HTTP helper uses the CRE HTTP capability with identical-response consensus aggregation. Zod checks response shapes and applicable numeric bounds before values reach the gate. These checks do not establish source authenticity or the semantic correctness of the returned data.
 
 ### Decision policy
 
-The workflow preserves AI and policy as separate concerns:
-
-- **Gemini** produces the public-health score and summary.
-- **Climate risk** is calculated deterministically from temperature and current UV index.
-- **Carbon risk** is calculated deterministically from forecast intensity and the API classification.
-- **Publication** uses a deterministic OR condition.
-
-| Signal | Publication rule | Source of threshold |
+| Signal | Rule | Configuration source |
 |---|---|---|
-| Health | `riskScore >= healthThreshold` | Workflow configuration; currently `30` |
-| Climate | `climateRisk >= 3` | Shared workflow constant |
-| Carbon / ESG proxy | `esgRisk >= 3` | Shared workflow constant |
+| Health | Gemini `riskScore >= 30` | `alertThreshold` in the selected workflow config |
+| Climate | Calculated `riskLevel >= 3` | `DECISION_THRESHOLDS.climate` in `shared/decisionPolicy.ts` |
+| Carbon | Calculated `riskLevel >= 3` | `DECISION_THRESHOLDS.esg` in `shared/decisionPolicy.ts` |
 
-The workflow validates configuration, API responses, Gemini’s outer response, and Gemini’s parsed analysis before using any value in the gate.
+Publication uses:
 
-### CRE report contents
+```text
+health threshold met OR climate threshold met OR carbon threshold met
+```
 
-When the gate publishes, the report payload contains:
+Gemini supplies only the health assessment. The climate and carbon risk calculations, threshold comparisons, and final OR condition are deterministic code.
+
+### Report payload
+
+The encoded payload contains five fields:
 
 ```text
 source
 region
 disease
 riskScore
-combined summary
+summary
 ```
 
-The combined summary includes the health summary plus climate and carbon context. The payload is ABI-encoded, passed to `runtime.report`, and configured with ECDSA signing and Keccak-256 hashing before `writeReport` targets the Sepolia registry.
+`summary` combines Gemini's health summary with climate and carbon context. Climate risk and carbon risk are not encoded as independent contract fields in this report shape. A climate or carbon threshold can therefore cause publication while the structured `riskScore` field still contains Gemini's health score.
 
-### What CRE does not currently do
+The workflow passes the payload to `runtime.report` with:
 
-- It does not generate a Circom witness or Groth16 proof.
-- It does not call zkVerify.
-- It does not receive a zkVerify statement or aggregation receipt.
-- It does not write a zkVerify receipt to Sepolia.
-- It does not call `recordEnvironmentalDecisionAlert`; the current report shape maps to the health-alert record handled by `onReport`.
+```text
+encoder: evm
+signing algorithm: ecdsa
+hashing algorithm: keccak256
+```
+
+It then calls `EVMClient.writeReport`. This describes the implemented code path; it is not evidence that a hosted CRE deployment or a specific Sepolia transaction exists.
+
+### CRE boundary
+
+The workflow does not:
+
+- generate a Circom witness or Groth16 proof;
+- call zkVerify;
+- receive a zkVerify statement or aggregation receipt;
+- call `recordEnvironmentalDecisionAlert`;
+- verify that the configured receiver is bytecode-equivalent to the checked-in contract artifact.
 
 ---
 
-## What the zkVerify proof proves
+## Solidity demonstration registry
 
-The circuit is defined in [`zkverify/circuits/decision_hash.circom`](zkverify/circuits/decision_hash.circom).
+[`contracts/HealthAlertRegistry.sol`](contracts/HealthAlertRegistry.sol) uses Solidity `^0.8.20`. The checked-in Remix metadata records compilation with Solidity `0.8.34`.
 
-It has:
+### Record types in the current source
 
-- one **private input**: `decisionSecret`
-- one **public input**: `decisionHash`
-- one constraint: `Poseidon(decisionSecret) == decisionHash`
+| Record | Purpose | Used by current workflow |
+|---|---|---:|
+| `HealthAlert` | Stores source, region, disease, health risk score, summary, and block timestamp | Intended report shape |
+| `ClimateAlert` | Stores caller-submitted climate fields and an evidence reference | No |
+| `EnvironmentalDecisionAlert` | Stores caller-submitted combined risk fields and a proof reference | No |
 
-For the checked-in demonstration, [`zkverify/generate-input.js`](zkverify/generate-input.js) uses fixed sample values:
+The source exposes `recordAlert`, `recordClimateAlert`, `recordEnvironmentalDecisionAlert`, and `onReport` as permissionless functions. It does not authenticate a CRE forwarder or validate a report signature.
+
+### Storage and event semantics
+
+- The three public arrays are append-only in the current source; there are no update or delete functions.
+- Array positions serve as alert IDs for climate and environmental-decision records. Health IDs are emitted as the appended array index.
+- Climate records are also copied into a private, case-sensitive city mapping.
+- `timestamp` is `block.timestamp`, not an observation timestamp from an external API.
+- `publisher` exists only on climate and environmental-decision records and equals the immediate `msg.sender`.
+- `evidenceHash` is caller-supplied climate metadata and is not checked against external evidence.
+- `proofHash` is a required, nonzero reference on a combined-decision record; the contract does not verify a proof or zkVerify receipt.
+
+The configured address used by the frontend and workflow is:
+
+```text
+0x54910B770A045c04672Cb53Db4b0b80812237370
+```
+
+The repository contains generated artifacts but no deployment transaction or manifest proving that the current source and artifact are the exact code deployed at that address. The README therefore treats it as a configured address, not as a verified deployment of the current source revision.
+
+---
+
+## Independent Groth16 and zkVerify demonstration
+
+The proof example under [`zkverify/`](zkverify/) is separate from CRE and from the Sepolia registry.
+
+### Circuit statement
+
+[`zkverify/circuits/decision_hash.circom`](zkverify/circuits/decision_hash.circom) has:
+
+- private input: `decisionSecret`;
+- public input: `decisionHash`;
+- constraint: `Poseidon(decisionSecret) == decisionHash`.
+
+The checked-in sample input is created from fixed values in [`zkverify/generate-input.js`](zkverify/generate-input.js):
 
 ```text
 healthRisk  = 85
@@ -230,100 +220,71 @@ decisionSecret = 85 × 10,000 + 3 × 100 + 4
                = 850304
 ```
 
-The Groth16 proof demonstrates that the prover knows a private value whose Poseidon hash equals the public `decisionHash`.
+The public signal in `zkverify/build/public.json` matches the Poseidon hash stored in `zkverify/input.json`.
 
-### Proven statement
+### What the proof establishes
 
-```text
-∃ decisionSecret:
-Poseidon(decisionSecret) = public decisionHash
-```
+The Groth16 proof establishes knowledge of a private field element whose Poseidon hash equals the public input, relative to the checked-in verification key.
 
-### Not proven
+### What the proof does not establish
 
-The current circuit does **not** prove:
+It does not establish:
 
-- that `decisionSecret` was produced by the CRE workflow;
-- that the encoded fields are valid health, climate, or carbon scores;
-- that any publication threshold was met;
-- that the OR policy was evaluated correctly;
-- that CDC, Open-Meteo, Carbon Intensity API, or Gemini produced the values;
-- that Gemini’s assessment is factually correct;
-- that the latest Sepolia alert corresponds to this proof;
-- that a zkVerify result was consumed on Ethereum.
+- that `850304` came from CRE, the frontend, or the contract;
+- that the private value contains three correctly encoded scores;
+- that any score is in an expected range;
+- that the Decision Gate's OR rule was evaluated;
+- that a publication threshold was met;
+- that CDC, Open-Meteo, the Carbon Intensity API, or Gemini supplied the values;
+- that a Sepolia alert corresponds to the proof;
+- that Ethereum consumed a zkVerify result.
 
-This is best understood as a **Groth16 and zkVerify transport demonstration**, not a proof of the complete TerraGuardian decision policy.
+The circuit constrains one hash relation. The score interpretation exists only in the input-generation script and is not enforced by the circuit.
 
-### Historical Volta result
+### Checked-in Volta summary
 
-| Field | Value |
+[`zkverify/verification-summary.json`](zkverify/verification-summary.json) records selected fields from one historical result returned by `submit-proof.js`:
+
+| Field | Checked-in value |
 |---|---|
 | Network | zkVerify Volta Testnet |
 | Proof system | Groth16 |
-| Proving library | snarkjs |
+| Library format | snarkjs |
 | Curve | bn128 |
-| Submission mode | Verify-only; no aggregation domain configured |
-| Status | Historical transaction finalized |
+| Submission mode | Verify-only; no aggregation domain is supplied by the script |
+| Recorded status | `finalized` |
 | Transaction hash | `0x942a124065c32cf758be3c90caaf562545e7b58cee1bba950e4a909747029a2f` |
 | Statement hash | `0xcb17b4b45cc94c05670e0f43c691143fce6f391d88adf7802bd28e2bf1baede5` |
 
-The React dashboard labels this result **Historical zkVerify demo** and explicitly states that it was completed independently.
+This is historical repository metadata. The frontend does not query zkVerify; it displays a hard-coded copy from [`frontend/src/services/zkverify.js`](frontend/src/services/zkverify.js).
+
+### Reproducibility boundary
+
+The repository includes the circuit, fixed input generator, proof, public signal, verification key, and submission script. It does not include a complete script or command sequence for compiling the circuit, creating a trusted setup, generating the witness, or generating the proof. The existing proof can be verified, but its full generation process is not reproducible from the documented repository commands alone.
 
 ---
 
-## Ethereum demonstration registry
+## React frontend
 
-[`contracts/HealthAlertRegistry.sol`](contracts/HealthAlertRegistry.sol) is an append-only demonstration contract with three record shapes.
+The Vite application uses React 19 and ethers 6. Its current UI is read-only.
 
-| Record | Current role | Workflow integration |
-|---|---|---|
-| `HealthAlert` | Public-health record displayed by the dashboard | **Used by the current CRE report shape** |
-| `ClimateAlert` | Optional manually or externally submitted climate record | Not written by the current CRE workflow |
-| `EnvironmentalDecisionAlert` | Reserved combined-decision record with a proof-reference field | Future integration boundary |
+### Data sources
 
-### Contract trust model
-
-The registry intentionally has **no access control** for this hackathon demonstration.
-
-- `recordAlert`, `recordClimateAlert`, `recordEnvironmentalDecisionAlert`, and `onReport` are permissionless.
-- `publisher` means the immediate `msg.sender`; it does not authenticate an oracle, CRE workflow, or data provider.
-- `evidenceHash` is caller-supplied metadata.
-- `proofHash` is a caller-supplied proof reference and is not verified by the contract.
-- `block.timestamp` records the inclusion block’s timestamp, not the original observation time.
-
-Accordingly, contract storage provides public persistence and event visibility, but the current contract does not enforce publisher provenance or zkVerify-backed authorization.
-
----
-
-## Frontend
-
-The React dashboard presents the system as an environmental-intelligence interface while keeping provenance visible.
-
-### Data channels
-
-| Dashboard data | Source | Wallet required |
+| UI data | Runtime source | Wallet approval |
 |---|---|---:|
-| Latest health alert | Sepolia registry through public JSON-RPC | No |
-| Latest recorded climate alert | Sepolia registry when present | No |
+| Latest health alert | Configured Sepolia registry through `JsonRpcProvider` | No |
+| Latest recorded climate alert | Configured Sepolia registry through `JsonRpcProvider` | No |
 | Live climate fallback | Open-Meteo | No |
-| Carbon intensity | UK Carbon Intensity API | No |
-| Historical proof metadata | Checked-in zkVerify demonstration record | No |
+| Carbon intensity | Carbon Intensity API | No |
+| Historical zkVerify metadata | Static frontend service object | No |
 
-Read and write concerns are separated:
+`useDashboardData` requests four data channels with `Promise.allSettled`, preserves per-channel errors, and prefers a recorded climate alert over live Open-Meteo data when a record is available.
 
-- `blockchainRead.js` uses a read-only `JsonRpcProvider`.
-- `blockchainWrite.js` requests a browser-wallet signer only for an explicit write operation.
+The Decision Gate component is a client-side policy preview. It combines the latest health record, the selected climate value, and current carbon data. Those inputs can have different timestamps and are not evidence of one CRE execution. The frontend and workflow import their fixed policy calculations from `shared/decisionPolicy.ts`; the workflow's health threshold remains configuration-driven.
 
-Shared decision calculations live under `frontend/src/domain/`, and dashboard loading/error orchestration lives under `frontend/src/hooks/`.
+`blockchainRead.js` uses a public JSON-RPC provider. The current frontend does not expose contract writes.
 
-### Interface modules
-
-- Public-health risk gauge, data completeness, declared provenance, and workflow timeline
-- London temperature, humidity, current UV, wind, and climate-risk visualization
-- Institutional carbon-intensity monitor with actual/forecast comparison
-- Central three-input Decision Gate preview
-- Historical zkVerify proof card with explicit non-integration language
-- Parallel CRE and Groth16 architecture visualization
+CDC, Gemini, and Sepolia badges in the health module are static interface labels. They are not derived from the registry record and are not provenance attestations.
 
 ---
 
@@ -333,69 +294,43 @@ Shared decision calculations live under `frontend/src/domain/`, and dashboard lo
 environmental-health-intelligence-agent/
 ├── contracts/
 │   └── HealthAlertRegistry.sol
-│
 ├── docs/
 │   └── zkverify-integration-notes.md
-│
 ├── frontend/
-│   ├── public/
-│   └── src/
-│       ├── assets/                  Generated hero and SVG illustrations
-│       ├── components/              Dashboard presentation components
-│       ├── domain/
-│       │   └── decision.js          Shared frontend decision policy
-│       ├── hooks/
-│       │   └── useDashboardData.js  Loading, error, and refresh orchestration
-│       ├── services/
-│       │   ├── blockchainConfig.js
-│       │   ├── blockchainRead.js
-│       │   ├── blockchainWrite.js
-│       │   ├── climate.js
-│       │   ├── esg.js
-│       │   ├── registryAbi.js
-│       │   ├── validation.js
-│       │   └── zkverify.js
-│       ├── App.jsx
-│       └── index.css
-│
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── domain/decision.js
+│   │   ├── hooks/useDashboardData.js
+│   │   ├── services/
+│   │   ├── App.jsx
+│   │   └── index.css
+│   └── package.json
+├── shared/
+│   └── decisionPolicy.ts
 ├── workflow-environmental-health-intelligence-agent/
 │   ├── config/
-│   │   ├── config.staging.json
-│   │   └── config.production.json
 │   ├── main.ts
 │   ├── workflow.ts
-│   └── workflow.yaml
-│
+│   ├── workflow.yaml
+│   └── binary.wasm
 ├── zkverify/
 │   ├── build/
-│   │   ├── proof.json
-│   │   ├── public.json
-│   │   └── verification_key.json
-│   ├── circuits/
-│   │   └── decision_hash.circom
+│   ├── circuits/decision_hash.circom
 │   ├── generate-input.js
-│   ├── input.json
 │   ├── submit-proof.js
 │   └── verification-summary.json
-│
 ├── project.yaml
-└── secrets.yaml                     CRE secret-name mapping; no secret values
+└── secrets.yaml
 ```
 
-Generated Remix artifacts and local build output are implementation support files rather than additional application layers.
+`secrets.yaml` maps the CRE secret name `GEMINI_API_KEY` to the environment variable name `CRE_GEMINI_API_KEY`; it contains no API-key value.
 
 ---
 
-## Run locally
+## Run and verify locally
 
-### Requirements
-
-- Node.js and npm
-- CRE-compatible workflow toolchain for workflow compilation or simulation
-- A Gemini API key mapped through the CRE secrets configuration
-- A zkVerify Volta-funded test account only if repeating proof submission
-
-### React dashboard
+### Frontend
 
 ```bash
 cd frontend
@@ -403,132 +338,97 @@ npm install
 npm run dev
 ```
 
-Optional frontend configuration:
+Optional Vite configuration:
 
 ```bash
 VITE_SEPOLIA_RPC_URL=
 VITE_HEALTH_ALERT_REGISTRY_ADDRESS=
 ```
 
-If unset, the dashboard uses the checked-in Sepolia address and public RPC defaults.
+If omitted, the frontend uses the public Sepolia RPC and registry address defined in `frontend/src/services/blockchainConfig.js`.
 
-### Frontend validation
+Frontend checks:
 
 ```bash
-cd frontend
 npm run lint
 npm run build
 ```
 
-### CRE workflow validation
+### CRE workflow
+
+The workflow package requires Bun during its setup and compilation flow.
 
 ```bash
 cd workflow-environmental-health-intelligence-agent
 npm install
-npx tsc --noEmit
+npm run typecheck
+npm run build
 ```
 
-The workflow configuration expects the `GEMINI_API_KEY` secret name mapped in `secrets.yaml`. Secret values are supplied through the CRE environment and are not committed.
+Simulation or deployment also requires a valid Gemini API key supplied through the CRE secret environment. The repository does not claim a continuously running deployment.
 
-### Independent zkVerify demo
+### Existing Groth16 proof
 
 ```bash
 cd zkverify
 npm install
-node generate-input.js
+npm run verify
 ```
 
-Proof submission uses:
+Regenerate only the fixed sample input:
 
 ```bash
-node submit-proof.js
+npm run generate:input
 ```
 
-`submit-proof.js` expects valid Groth16 artifacts in `zkverify/build/` and a local `SEED_PHRASE`. Never commit the seed phrase or production credentials.
+Submit the existing artifacts to Volta:
 
-> [!NOTE]
-> `generate-input.js` regenerates the sample circuit input. It does not automatically regenerate all witness, proving-key, and proof artifacts.
+```bash
+SEED_PHRASE="..." npm run submit
+```
+
+`SEED_PHRASE` funds and signs the zkVerify transaction. It must never be committed. `generate-input.js` does not regenerate the witness, proving key, proof, or verification key.
+
+### Solidity
+
+The repository includes Solidity source and Remix-generated artifacts. It does not currently provide a standalone Solidity build script or deployment script.
 
 ---
 
-## Verification and build status
+## Trust boundaries and limitations
 
-The following checks pass in the current repository state:
+TerraGuardian is an Encode Club Remix AI Bootcamp final project and portfolio demonstration. It is not:
 
-| Check | Result |
-|---|---:|
-| Frontend ESLint | Pass |
-| Frontend production build | Pass |
-| Workflow TypeScript type-check | Pass |
-| CRE workflow → WASM compilation | Pass |
-| Solidity 0.8.20 compilation | Pass |
-| Desktop browser runtime check | Pass |
-| 390px responsive layout check | Pass |
+- medical advice, diagnosis, or an official public-health alerting system;
+- a comprehensive ESG assessment;
+- evidence of a continuously deployed CRE workflow;
+- a provenance-enforcing or access-controlled registry;
+- proof that Gemini output or external API data is correct;
+- a proof of the complete Decision Gate policy;
+- a zkVerify-authorized Ethereum application;
+- production-ready software.
 
-These build checks demonstrate repository consistency. They are not claims about continuous hosted CRE operation, production security, or medical validity.
+The project demonstrates how external data, AI-assisted health analysis, deterministic rules, CRE report construction, public-chain reads, and a separate zero-knowledge submission example can be presented without merging their trust assumptions.
 
 ---
 
 ## Roadmap
 
-### Phase 1 — Canonical decision package
+### 1. Canonical decision package
 
-- Define one versioned serialization for health, climate, carbon, thresholds, timestamps, and source commitments.
-- Produce that package once per CRE execution.
-- Store an application commitment alongside the published record.
-- Add deterministic fixtures covering all threshold boundaries.
+- Define one versioned encoding for signals, thresholds, timestamps, and source commitments.
+- Produce it once per workflow execution and commit to it in the published record.
+- Add boundary tests for each decision threshold.
 
-### Phase 2 — Policy-constrained proof
+### 2. Policy-constrained proof
 
-- Replace the sample preimage circuit with explicit field constraints.
-- Range-constrain each risk score.
-- Enforce the same OR publication rule used by CRE.
-- Bind public inputs to a canonical decision commitment.
-- Add reproducible witness, setup, proof, and local verification scripts.
+- Replace the preimage-only circuit with range and policy constraints.
+- Bind public inputs to the canonical decision package.
+- Add reproducible circuit compilation, setup, witness, proof, and local-verification scripts.
 
-### Phase 3 — zkVerify receipt integration
+### 3. Authenticated zkVerify consumption
 
 - Submit the policy proof through an authenticated orchestration path.
-- Use an aggregation domain where required for receipt generation.
-- Retrieve and validate the relevant statement and inclusion data.
-- Link the proof result to the exact CRE decision package.
-
-### Phase 4 — Authenticated on-chain consumption
-
-- Introduce an authorized CRE receiver or equivalent publisher boundary.
-- Verify the zkVerify receipt or accepted cross-chain representation on the destination chain.
-- Gate the combined environmental-decision write on the verified statement.
-- Add replay protection, versioning, and operational monitoring.
-
-### Phase 5 — Production hardening
-
-- Threat modeling and independent contract review
-- Resilient data-source aggregation and failure policy
-- Model/version provenance and prompt versioning
-- Pagination and storage-cost controls
-- Accessibility, observability, and incident response
-
----
-
-## Security and scope
-
-TerraGuardian is a **hackathon and portfolio demonstration**.
-
-It is not:
-
-- a medical diagnosis or public-health authority;
-- a comprehensive ESG rating system;
-- a production oracle network deployment;
-- a permissioned or provenance-enforcing registry;
-- a proof that an AI model is truthful;
-- a production-ready zero-knowledge authorization system.
-
-Its purpose is to demonstrate clean architectural boundaries between external data, AI-assisted analysis, deterministic policy, CRE report publication, public-chain storage, dashboard presentation, and an independently operated zero-knowledge proof pipeline.
-
----
-
-<div align="center">
-
-**TerraGuardian** — observe broadly, decide deterministically, verify precisely.
-
-</div>
+- Retrieve the required zkVerify statement or aggregation data.
+- Verify the accepted result on the destination chain before recording the combined decision.
+- Add publisher authentication, replay protection, versioning, and operational monitoring.

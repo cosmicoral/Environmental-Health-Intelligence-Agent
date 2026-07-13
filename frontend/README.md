@@ -1,6 +1,6 @@
 # TerraGuardian Frontend
 
-Premium React dashboard for the TerraGuardian hackathon demonstration.
+Premium React dashboard for the TerraGuardian Encode Club Remix AI Bootcamp final project.
 
 ## Data boundaries
 
@@ -10,7 +10,7 @@ Premium React dashboard for the TerraGuardian hackathon demonstration.
 - The Decision Gate is a client-side threshold preview, not a CRE execution receipt.
 - The zkVerify panel displays one historical independent Groth16 submission.
 
-Read operations use a public JSON-RPC provider and do not request wallet access. The separate write service requests a signer only when a write operation is explicitly initiated.
+Read operations use a public JSON-RPC provider and do not request wallet access. The current frontend does not expose contract writes.
 
 ## Commands
 

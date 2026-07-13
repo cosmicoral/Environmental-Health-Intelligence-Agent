@@ -12,10 +12,6 @@ const registry = new Contract(
   provider,
 );
 
-export function getReadOnlyRegistry() {
-  return registry;
-}
-
 export async function getLatestHealthAlert() {
   const count = await registry.getAlertCount();
   if (count === 0n) return null;
@@ -46,26 +42,6 @@ export async function getLatestClimateAlert() {
     safetyAdvice: latest.safetyAdvice,
     dataSource: latest.dataSource,
     evidenceHash: latest.evidenceHash,
-    timestamp: Number(latest.timestamp),
-    publisher: latest.publisher,
-  };
-}
-
-export async function getLatestEnvironmentalDecision() {
-  const count = await registry.getEnvironmentalDecisionAlertCount();
-  if (count === 0n) return null;
-
-  const latest = await registry.getLatestEnvironmentalDecisionAlert();
-  return {
-    alertId: Number(latest.alertId),
-    source: latest.source,
-    region: latest.region,
-    disease: latest.disease,
-    healthRisk: Number(latest.healthRisk),
-    climateRisk: Number(latest.climateRisk),
-    esgRisk: Number(latest.esgRisk),
-    proofReference: latest.proofHash,
-    summary: latest.summary,
     timestamp: Number(latest.timestamp),
     publisher: latest.publisher,
   };

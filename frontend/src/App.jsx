@@ -1,4 +1,3 @@
-import "./index.css";
 import galaxyMesh from "./assets/galaxy-mesh.svg";
 import ClimateModule from "./components/ClimateModule";
 import DecisionGate from "./components/DecisionGate";
@@ -14,7 +13,7 @@ function App() {
   const dashboard = useDashboardData();
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" aria-busy={dashboard.loading}>
       <img className="app-shell__mesh" src={galaxyMesh} alt="" />
       <div className="app-shell__glow app-shell__glow--one" />
       <div className="app-shell__glow app-shell__glow--two" />

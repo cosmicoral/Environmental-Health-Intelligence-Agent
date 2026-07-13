@@ -6,17 +6,11 @@
  * dashboard.
  */
 export const HISTORICAL_ZKVERIFY_DEMO = Object.freeze({
-  network: "zkVerify Volta Testnet",
+  network: "Volta Testnet",
   proofSystem: "Groth16",
-  status: "Finalized historical demo",
+  status: "Verification completed",
   transactionHash:
     "0x942a124065c32cf758be3c90caaf562545e7b58cee1bba950e4a909747029a2f",
   statementHash:
     "0xcb17b4b45cc94c05670e0f43c691143fce6f391d88adf7802bd28e2bf1baede5",
-  note:
-    "Generated and submitted by the separate zkVerify proof pipeline; no CRE-to-zkVerify orchestration is implemented.",
 });
-
-export function getHistoricalZkVerifyDemo() {
-  return HISTORICAL_ZKVERIFY_DEMO;
-}

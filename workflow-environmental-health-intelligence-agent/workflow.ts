@@ -2,8 +2,8 @@
  * TerraGuardian Chainlink CRE workflow.
  *
  * Fetches public-health, climate, and carbon-intensity data, evaluates the
- * configured publication rules, and publishes approved health alerts to the
- * demonstration registry on Ethereum Sepolia.
+ * configured publication rules, and submits qualifying reports to the
+ * configured Ethereum Sepolia receiver address.
  *
  * Groth16 proof generation and zkVerify submission are intentionally separate
  * and run from /zkverify. This workflow does not generate or verify proofs.
@@ -25,9 +25,13 @@ import {
 import { Buffer } from "buffer";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { z } from "zod";
+import {
+  calculateClimateRisk,
+  calculateEsgRisk,
+  evaluateDecisionGate,
+  type RiskAssessment,
+} from "../shared/decisionPolicy";
 
-const CLIMATE_ALERT_THRESHOLD = 3;
-const ESG_ALERT_THRESHOLD = 3;
 const CLIMATE_CITY = "London";
 const CRE_REPORT_SOURCE =
   "CDC Open Data + Open-Meteo + Carbon Intensity + Gemini";
@@ -112,30 +116,19 @@ type HttpRequest = {
   body?: string;
 };
 
-type ClimateAssessment = {
+type ClimateAssessment = RiskAssessment & {
   temperature: number;
   humidity: number;
   windSpeed: number;
   uvIndex: number;
-  riskLevel: number;
-  advice: string;
 };
 
-type CarbonAssessment = {
+type CarbonAssessment = RiskAssessment & {
   actual: number;
   forecast: number;
   index: string;
   from: string;
   to: string;
-  riskLevel: number;
-  advice: string;
-};
-
-type DecisionGateResult = {
-  publishHealth: boolean;
-  publishClimate: boolean;
-  publishEsg: boolean;
-  shouldPublish: boolean;
 };
 
 let evmClient: EVMClient;
@@ -194,46 +187,6 @@ function fetchCDC(runtime: Runtime<Config>): CdcResponse {
   );
 }
 
-function calculateClimateRisk(
-  temperature: number,
-  uvIndex: number,
-): Pick<ClimateAssessment, "riskLevel" | "advice"> {
-  if (temperature >= 35 || uvIndex >= 8) {
-    return {
-      riskLevel: 5,
-      advice:
-        "Extreme heat or UV risk. Avoid outdoor activity during peak hours.",
-    };
-  }
-
-  if (temperature >= 30 || uvIndex >= 6) {
-    return {
-      riskLevel: 4,
-      advice: "High heat or UV risk. Reduce prolonged outdoor exposure.",
-    };
-  }
-
-  if (temperature >= 26 || uvIndex >= 4) {
-    return {
-      riskLevel: 3,
-      advice:
-        "Moderate heat risk. Stay hydrated and check vulnerable groups.",
-    };
-  }
-
-  if (temperature >= 22) {
-    return {
-      riskLevel: 2,
-      advice: "Mild heat risk. Continue normal precautions.",
-    };
-  }
-
-  return {
-    riskLevel: 1,
-    advice: "Normal conditions. Monitor local weather updates.",
-  };
-}
-
 function fetchClimate(runtime: Runtime<Config>): ClimateAssessment {
   runtime.log("Fetching Open-Meteo climate data");
   const url =
@@ -257,42 +210,6 @@ function fetchClimate(runtime: Runtime<Config>): ClimateAssessment {
     windSpeed: current.wind_speed_10m,
     uvIndex: current.uv_index,
     ...risk,
-  };
-}
-
-function calculateEsgRisk(
-  forecast: number,
-  index: string,
-): Pick<CarbonAssessment, "riskLevel" | "advice"> {
-  if (index === "very high" || forecast >= 300) {
-    return {
-      riskLevel: 5,
-      advice:
-        "Very high carbon intensity. Delay non-critical energy-intensive workloads.",
-    };
-  }
-
-  if (index === "high" || forecast >= 200) {
-    return {
-      riskLevel: 4,
-      advice:
-        "High carbon intensity. Consider reducing non-essential electricity usage.",
-    };
-  }
-
-  if (index === "moderate" || forecast >= 100) {
-    return {
-      riskLevel: 3,
-      advice: "Moderate carbon intensity. Continue monitoring grid conditions.",
-    };
-  }
-
-  return {
-    riskLevel: 1,
-    advice:
-      index === "low"
-        ? "Low carbon intensity. Good time for energy-efficient operations."
-        : "Carbon intensity is within normal operating conditions.",
   };
 }
 
@@ -381,24 +298,6 @@ Return format:
   return geminiAnalysisSchema.parse(analysis);
 }
 
-function evaluateDecisionGate(
-  healthRiskScore: number,
-  healthThreshold: number,
-  climateRiskLevel: number,
-  esgRiskLevel: number,
-): DecisionGateResult {
-  const publishHealth = healthRiskScore >= healthThreshold;
-  const publishClimate = climateRiskLevel >= CLIMATE_ALERT_THRESHOLD;
-  const publishEsg = esgRiskLevel >= ESG_ALERT_THRESHOLD;
-
-  return {
-    publishHealth,
-    publishClimate,
-    publishEsg,
-    shouldPublish: publishHealth || publishClimate || publishEsg,
-  };
-}
-
 function buildDecisionSummary(
   analysis: GeminiAnalysis,
   climate: ClimateAssessment,
@@ -462,7 +361,7 @@ function publishCREReport(
   );
 }
 
-export function on10MinHealthCheck(
+function on10MinHealthCheck(
   runtime: Runtime<Config>,
   payload: CronPayload,
 ): string {

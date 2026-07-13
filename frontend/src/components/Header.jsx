@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
+import commandCenter from "../assets/environmental-command-center.svg";
 import heroOrbit from "../assets/hero-orbit.jpg";
 import planetIllustration from "../assets/planet-illustration.svg";
+import signalOrbit from "../assets/signal-orbit.svg";
 
 function Header({ lastUpdated, loading, onRefresh }) {
   const updateLabel = lastUpdated
@@ -15,8 +16,9 @@ function Header({ lastUpdated, loading, onRefresh }) {
           <span>TerraGuardian</span>
         </a>
         <div className="topbar__links">
-          <a href="#intelligence">Intelligence</a>
+          <a href="#health-intelligence">Signals</a>
           <a href="#decision-gate">Decision Gate</a>
+          <a href="#verification">Verification</a>
           <a href="#architecture">Architecture</a>
         </div>
         <button className="refresh-button" onClick={onRefresh} disabled={loading}>
@@ -28,12 +30,8 @@ function Header({ lastUpdated, loading, onRefresh }) {
       <header id="top" className="hero">
         <img className="hero__background" src={heroOrbit} alt="" />
         <div className="hero__veil" />
-        <motion.div
-          className="hero__content"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
+        <div className="hero__content motion-fade-up">
+          <div className="chapter-question chapter-question--hero"><span>00</span><p>What is TerraGuardian?</p></div>
           <div className="eyebrow"><span /> Environmental decision intelligence</div>
           <h1>Planetary signals.<br /><em>Decision-grade clarity.</em></h1>
           <p className="hero__lede">
@@ -49,16 +47,14 @@ function Header({ lastUpdated, loading, onRefresh }) {
             <div>Updated {updateLabel}</div>
             <div>CRE simulation architecture</div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.img
-          className="hero__planet"
+        <img
+          className="hero__planet motion-scale-in"
           src={planetIllustration}
           alt="Illustrated environmental intelligence globe"
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.15 }}
         />
+        <img className="hero__signal-orbit" src={signalOrbit} alt="" />
       </header>
 
       <div className="trust-rail" aria-label="Technology stack">
@@ -73,6 +69,29 @@ function Header({ lastUpdated, loading, onRefresh }) {
           </div>
         ))}
       </div>
+
+      <div className="hero-showcase" aria-label="TerraGuardian product overview">
+        <div className="hero-showcase__copy">
+          <span className="overline">Product surface</span>
+          <strong>One operating view. Explicit trust boundaries.</strong>
+          <p>Health, climate, and carbon evidence remain distinct until the deterministic Decision Gate evaluates publication.</p>
+        </div>
+        <div className="hero-showcase__stage">
+          <div className="command-frame">
+            <div className="command-frame__bar">
+              <div><span /><span /><span /></div>
+              <p>TerraGuardian · Environmental command center</p>
+              <span>Live view</span>
+            </div>
+            <img src={commandCenter} alt="TerraGuardian environmental command center interface" />
+            <div className="command-frame__scan" aria-hidden="true" />
+          </div>
+          <span className="floating-source floating-source--cdc">CDC</span>
+          <span className="floating-source floating-source--weather">Open-Meteo</span>
+          <span className="floating-source floating-source--grid">Grid API</span>
+        </div>
+      </div>
+      <div className="chapter-transition chapter-transition--hero" aria-hidden="true"><span /><i /></div>
     </>
   );
 }

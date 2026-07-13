@@ -9,7 +9,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules/framer-motion")) return "vendor-motion";
           if (id.includes("node_modules/ethers")) return "vendor-ethers";
           if (id.includes("node_modules/react")) return "vendor-react";
         },

@@ -1,17 +1,28 @@
-import { motion } from "framer-motion";
 import decisionIllustration from "../assets/decision-gate-illustration.svg";
 import healthIcon from "../assets/health-icon.svg";
 import climateIcon from "../assets/climate-icon.svg";
 import esgIcon from "../assets/esg-icon.svg";
 import { evaluateDecision } from "../domain/decision";
 
+const signalRadius = 18;
+const signalCircumference = 2 * Math.PI * signalRadius;
+
 function SignalInput({ icon, label, input, unit, delay }) {
+  const progress = Math.min(1, input.threshold > 0 ? input.value / input.threshold : 0);
+  const offset = signalCircumference - progress * signalCircumference;
+
   return (
-    <motion.div className={`signal-input ${input.triggered ? "is-triggered" : ""}`} initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay }}>
-      <img src={icon} alt="" />
+    <div className={`signal-input motion-reveal-left ${input.triggered ? "is-triggered" : ""}`} style={{ "--reveal-delay": `${delay}s` }}>
+      <div className="signal-input__visual" aria-hidden="true">
+        <svg viewBox="0 0 44 44">
+          <circle className="signal-input__track" cx="22" cy="22" r={signalRadius} />
+          <circle className="signal-input__progress" cx="22" cy="22" r={signalRadius} strokeDasharray={signalCircumference} style={{ "--ring-offset": offset, "--ring-delay": `${delay}s` }} />
+        </svg>
+        <img src={icon} alt="" />
+      </div>
       <div><span>{label}</span><strong>{input.value}{unit}</strong><small>Threshold {input.threshold}{unit}</small></div>
       <i>{input.triggered ? "Triggered" : "Monitor"}</i>
-    </motion.div>
+    </div>
   );
 }
 
@@ -19,8 +30,8 @@ function DecisionGate({ healthAlert, climate, carbonData }) {
   const decision = evaluateDecision({ healthAlert, climate, carbonData });
 
   return (
-    <section id="decision-gate" className="module-section decision-section">
-      <div className="section-heading section-heading--center"><div><div className="eyebrow eyebrow--green"><span /> Deterministic Decision Gate</div><h2>Three signals. One publication decision.</h2><p>This client-side preview applies the same thresholds as the CRE workflow; it is not an on-chain execution receipt.</p></div></div>
+    <section id="decision-gate" className="module-section decision-section chapter-section" data-chapter="04">
+      <div className="section-heading section-heading--center"><div><div className="chapter-question chapter-question--center"><span>04</span><p>How are decisions made?</p></div><div className="eyebrow eyebrow--green"><span /> Deterministic Decision Gate</div><h2>Three signals. One publication decision.</h2><p>This client-side preview applies the same thresholds as the CRE workflow; it is not an on-chain execution receipt.</p></div></div>
       <article className="decision-console">
         <img className="decision-console__watermark" src={decisionIllustration} alt="" />
         <div className="decision-console__inputs">
@@ -28,18 +39,19 @@ function DecisionGate({ healthAlert, climate, carbonData }) {
           <SignalInput icon={climateIcon} label="Climate risk" input={decision.inputs.climate} unit="/5" delay={0.08} />
           <SignalInput icon={esgIcon} label="Carbon risk" input={decision.inputs.esg} unit="/5" delay={0.16} />
         </div>
-        <div className="decision-connector"><span /><span /><span /><i /></div>
-        <motion.div className="decision-engine" initial={{ scale: 0.94, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}>
+        <div className="decision-connector"><span /><span /><span /><i /><b /><b /></div>
+        <div className="decision-engine motion-scale-reveal">
           <div className="decision-engine__core"><span>OR</span></div>
-          <div><span className="overline">Policy engine</span><strong>Threshold evaluation</strong><small>Deterministic · auditable · off-chain</small></div>
-        </motion.div>
+          <div><span className="overline">Policy engine</span><strong>Threshold evaluation</strong><small>Deterministic · auditable · off-chain</small><span className="decision-engine__status"><i /> Evaluating three inputs</span></div>
+        </div>
         <div className="decision-arrow"><span>Decision output</span><i>↓</i></div>
-        <motion.div className={`decision-result ${decision.shouldPublish ? "decision-result--publish" : "decision-result--skip"}`} layout>
+        <div className={`decision-result motion-reveal ${decision.shouldPublish ? "decision-result--publish" : "decision-result--skip"}`}>
           <div><span className="decision-result__pulse" /><div><small>Current preview</small><strong>{decision.shouldPublish ? "Publish CRE Report" : "Skip publication"}</strong></div></div>
           <p>{decision.shouldPublish ? "At least one signal meets its publication threshold." : "All signals remain below their configured thresholds."}</p>
           <span className="decision-result__chain">Next: {decision.shouldPublish ? "Ethereum Sepolia" : "Next scheduled run"}</span>
-        </motion.div>
+        </div>
       </article>
+      <div className="chapter-transition" aria-hidden="true"><span /><i /></div>
     </section>
   );
 }

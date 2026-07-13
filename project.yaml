@@ -1,13 +1,9 @@
-# ==========================================================================
 # CRE project settings for local and target-network execution.
-
-# ==========================================================================
 staging-settings:
   rpcs:
     - chain-name: ethereum-testnet-sepolia
       url: https://ethereum-sepolia-rpc.publicnode.com
 
-# ==========================================================================
 production-settings:
   rpcs:
     - chain-name: ethereum-testnet-sepolia
