@@ -1,0 +1,9 @@
+{
+  "network": "zkVerify Volta Testnet",
+  "proofSystem": "Groth16",
+  "status": "finalized",
+  "transactionHash": "0x942a124065c32cf758be3c90caaf562545e7b58cee1bba950e4a909747029a2f",
+  "blockHash": "0xe22ae0ba8242ecc8a737492b0053944dd05e9deaf4d0779d3698cfa03bc5f50f",
+  "statement": "0xcb17b4b45cc94c05670e0f43c691143fce6f391d88adf7802bd28e2bf1baede5",
+  "publicInputs": 1
+}
