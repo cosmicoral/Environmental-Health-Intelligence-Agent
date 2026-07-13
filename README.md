@@ -2,7 +2,7 @@
 
 # TerraGuardian
 
-### Encode Club Remix AI Bootcamp final project for transparent environmental decision intelligence
+### Transparent environmental decision intelligence
 
 **TerraGuardian is the final project developed for the Encode Club Remix AI Bootcamp (Remix AI Bootcamp for Real World Impact).**
 
