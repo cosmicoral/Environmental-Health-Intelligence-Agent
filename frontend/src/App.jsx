@@ -11,6 +11,7 @@ import ESGModule from "./components/ESGModule";
 import DecisionGate from "./components/DecisionGate";
 import Workflow from "./components/Workflow";
 import ModuleGrid from "./components/ModuleGrid";
+import ZkVerifyCard from "./components/ZkVerifyCard";
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -71,13 +72,10 @@ function App() {
 
         <ClimateModule climate={climate} chainClimate={chainClimate} />
         <ESGModule esg={esg} />
-
         <HealthModule alert={alert} loading={loading} />
-
         <DecisionGate alert={alert} climate={chainClimate || climate} esg={esg} />
-
+        <ZkVerifyCard />
         <Workflow />
-
         <ModuleGrid />
       </div>
     </main>

@@ -1,21 +1,38 @@
-function Workflow() {
-  const steps = [
-    "Public Health Data",
-    "Climate Data",
-    "Gemini Risk Analysis",
-    "AI Decision Gate",
-    "Solidity Registry",
-    "Dashboard",
-  ];
+const steps = [
+  "Public Data",
+  "Gemini Analysis",
+  "Decision Gate",
+  "Groth16 Proof",
+  "zkVerify Volta",
+  "Statement Hash",
+  "Chainlink CRE",
+  "Sepolia Registry",
+  "Dashboard",
+];
 
+function Workflow() {
   return (
     <section className="mt-6 rounded-[2rem] border border-slate-800 bg-slate-900/60 p-6">
-      <h2 className="text-xl font-bold">Workflow</h2>
+      <div className="mb-5">
+        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">
+          Verifiable Workflow
+        </p>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-6">
-        {steps.map((step, i) => (
-          <div key={step} className="rounded-2xl bg-slate-950 p-4 text-center">
-            <p className="text-xs text-slate-500">Step {i + 1}</p>
+        <h2 className="mt-2 text-xl font-bold">
+          Data to Verified On-chain Decision
+        </h2>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        {steps.map((step, index) => (
+          <div
+            key={step}
+            className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-center"
+          >
+            <p className="text-xs uppercase tracking-widest text-slate-500">
+              Step {index + 1}
+            </p>
+
             <p className="mt-2 font-semibold">{step}</p>
           </div>
         ))}
