@@ -1,24 +1,79 @@
-function Header() {
+import { motion } from "framer-motion";
+import heroOrbit from "../assets/hero-orbit.jpg";
+import planetIllustration from "../assets/planet-illustration.svg";
+
+function Header({ lastUpdated, loading, onRefresh }) {
+  const updateLabel = lastUpdated
+    ? lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    : "Awaiting telemetry";
+
   return (
-    <header className="mb-8 flex items-center justify-between">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-          Chainlink CRE × Gemini × zkVerify
-        </p>
+    <>
+      <nav className="topbar" aria-label="Primary navigation">
+        <a className="brand" href="#top" aria-label="TerraGuardian home">
+          <span className="brand__mark">T</span>
+          <span>TerraGuardian</span>
+        </a>
+        <div className="topbar__links">
+          <a href="#intelligence">Intelligence</a>
+          <a href="#decision-gate">Decision Gate</a>
+          <a href="#architecture">Architecture</a>
+        </div>
+        <button className="refresh-button" onClick={onRefresh} disabled={loading}>
+          <span className={loading ? "refresh-button__icon is-spinning" : "refresh-button__icon"}>↻</span>
+          {loading ? "Synchronizing" : "Refresh data"}
+        </button>
+      </nav>
 
-        <h1 className="mt-3 text-6xl font-extrabold tracking-tight text-white">
-           TerraGuardian 
-        </h1>
+      <header id="top" className="hero">
+        <img className="hero__background" src={heroOrbit} alt="" />
+        <div className="hero__veil" />
+        <motion.div
+          className="hero__content"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="eyebrow"><span /> Environmental decision intelligence</div>
+          <h1>Planetary signals.<br /><em>Decision-grade clarity.</em></h1>
+          <p className="hero__lede">
+            TerraGuardian combines public-health, climate, and carbon-intensity
+            signals into a deterministic Chainlink CRE publication decision.
+          </p>
+          <div className="hero__actions">
+            <a className="primary-button" href="#decision-gate">Explore decision gate <span>↘</span></a>
+            <a className="secondary-button" href="#architecture">View system architecture</a>
+          </div>
+          <div className="hero__status-row">
+            <div><span className="live-dot" /> Sepolia read channel</div>
+            <div>Updated {updateLabel}</div>
+            <div>CRE simulation architecture</div>
+          </div>
+        </motion.div>
 
-        <p className="mt-2 text-slate-400">
-          Verifiable AI monitoring for public health, climate risk, and ESG data.
-        </p>
+        <motion.img
+          className="hero__planet"
+          src={planetIllustration}
+          alt="Illustrated environmental intelligence globe"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.15 }}
+        />
+      </header>
+
+      <div className="trust-rail" aria-label="Technology stack">
+        {[
+          ["Chainlink CRE", "Workflow"],
+          ["Gemini 2.5", "AI analysis"],
+          ["Ethereum", "Sepolia"],
+          ["Groth16", "Independent proof demo"],
+        ].map(([name, detail]) => (
+          <div className="trust-rail__item" key={name}>
+            <span>{name}</span><small>{detail}</small>
+          </div>
+        ))}
       </div>
-
-      <div className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-300">
-        ● CRE Simulation Ready
-      </div>
-    </header>
+    </>
   );
 }
 

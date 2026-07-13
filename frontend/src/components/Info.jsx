@@ -1,8 +1,10 @@
-function Info({ label, value }) {
+function Info({ label, value, detail, accent = "cyan" }) {
   return (
-    <div className="rounded-2xl bg-slate-950/70 p-5">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-xl font-bold">{value}</p>
+    <div className="metric-card">
+      <span className={`metric-card__dot metric-card__dot--${accent}`} />
+      <p className="metric-card__label">{label}</p>
+      <p className="metric-card__value">{value}</p>
+      {detail ? <p className="metric-card__detail">{detail}</p> : null}
     </div>
   );
 }

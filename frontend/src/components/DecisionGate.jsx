@@ -1,102 +1,45 @@
-import Info from "./Info";
+import { motion } from "framer-motion";
+import decisionIllustration from "../assets/decision-gate-illustration.svg";
+import healthIcon from "../assets/health-icon.svg";
+import climateIcon from "../assets/climate-icon.svg";
+import esgIcon from "../assets/esg-icon.svg";
+import { evaluateDecision } from "../domain/decision";
 
-function calculateEsgRisk(esg) {
-  if (!esg) return 0;
-
-  const forecast = Number(esg.forecast ?? esg.actual ?? 0);
-  const index = String(esg.index ?? "").toLowerCase();
-
-  if (index === "very high" || forecast >= 300) return 5;
-  if (index === "high" || forecast >= 200) return 4;
-  if (index === "moderate" || forecast >= 100) return 3;
-  if (index === "low") return 1;
-
-  return 1;
+function SignalInput({ icon, label, input, unit, delay }) {
+  return (
+    <motion.div className={`signal-input ${input.triggered ? "is-triggered" : ""}`} initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay }}>
+      <img src={icon} alt="" />
+      <div><span>{label}</span><strong>{input.value}{unit}</strong><small>Threshold {input.threshold}{unit}</small></div>
+      <i>{input.triggered ? "Triggered" : "Monitor"}</i>
+    </motion.div>
+  );
 }
 
-function DecisionGate({ alert, climate, esg }) {
-  const publicHealthThreshold = 30;
-  const climateThreshold = 3;
-  const esgThreshold = 3;
-
-  const riskScore = Number(alert?.riskScore ?? 0);
-
-  const climateRisk = Number(
-    climate?.riskLevel ?? climate?.climateRisk ?? 0
-  );
-
-  const esgRisk = calculateEsgRisk(esg);
-
-  const shouldPublishHealth = riskScore >= publicHealthThreshold;
-  const shouldPublishClimate = climateRisk >= climateThreshold;
-  const shouldPublishEsg = esgRisk >= esgThreshold;
-
-  const publicHealthDecision = shouldPublishHealth
-    ? "Trigger Alert"
-    : "Monitor Only";
-
-  const climateDecision = shouldPublishClimate
-    ? "Trigger Alert"
-    : "Monitor Only";
-
-  const esgDecision = shouldPublishEsg
-    ? "Trigger Alert"
-    : "Monitor Only";
-
-  const shouldPublish =
-    shouldPublishHealth || shouldPublishClimate || shouldPublishEsg;
-
-  const overallDecision = shouldPublish
-    ? "Publish On-chain Alert"
-    : "Skip Publication";
+function DecisionGate({ healthAlert, climate, carbonData }) {
+  const decision = evaluateDecision({ healthAlert, climate, carbonData });
 
   return (
-    <section className="mt-6 rounded-[2rem] border border-emerald-500/30 bg-emerald-950/20 p-6">
-      <div className="mb-5">
-        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-300">
-          Agent Decision Gate
-        </p>
-
-        <h2 className="mt-2 text-xl font-bold">
-          Risk Threshold Evaluation
-        </h2>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Info
-          label="Public Health Decision"
-          value={publicHealthDecision}
-        />
-
-        <Info label="Climate Decision" value={climateDecision} />
-
-        <Info label="ESG Decision" value={esgDecision} />
-
-        <Info label="Overall Decision" value={overallDecision} />
-
-        <Info label="Health Risk" value={`${riskScore}/100`} />
-
-        <Info label="Climate Risk" value={`${climateRisk}/5`} />
-
-        <Info label="ESG Risk" value={`${esgRisk}/5`} />
-
-        <Info
-          label="Health Threshold"
-          value={`${publicHealthThreshold}/100`}
-        />
-
-        <Info
-          label="Climate Threshold"
-          value={`${climateThreshold}/5`}
-        />
-
-        <Info label="ESG Threshold" value={`${esgThreshold}/5`} />
-      </div>
-
-      <p className="mt-5 text-sm leading-6 text-slate-400">
-        The decision gate mirrors the Chainlink CRE workflow thresholds for
-        public-health, climate, and carbon-intensity risks.
-      </p>
+    <section id="decision-gate" className="module-section decision-section">
+      <div className="section-heading section-heading--center"><div><div className="eyebrow eyebrow--green"><span /> Deterministic Decision Gate</div><h2>Three signals. One publication decision.</h2><p>This client-side preview applies the same thresholds as the CRE workflow; it is not an on-chain execution receipt.</p></div></div>
+      <article className="decision-console">
+        <img className="decision-console__watermark" src={decisionIllustration} alt="" />
+        <div className="decision-console__inputs">
+          <SignalInput icon={healthIcon} label="Health risk" input={decision.inputs.health} unit="/100" delay={0} />
+          <SignalInput icon={climateIcon} label="Climate risk" input={decision.inputs.climate} unit="/5" delay={0.08} />
+          <SignalInput icon={esgIcon} label="Carbon risk" input={decision.inputs.esg} unit="/5" delay={0.16} />
+        </div>
+        <div className="decision-connector"><span /><span /><span /><i /></div>
+        <motion.div className="decision-engine" initial={{ scale: 0.94, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}>
+          <div className="decision-engine__core"><span>OR</span></div>
+          <div><span className="overline">Policy engine</span><strong>Threshold evaluation</strong><small>Deterministic · auditable · off-chain</small></div>
+        </motion.div>
+        <div className="decision-arrow"><span>Decision output</span><i>↓</i></div>
+        <motion.div className={`decision-result ${decision.shouldPublish ? "decision-result--publish" : "decision-result--skip"}`} layout>
+          <div><span className="decision-result__pulse" /><div><small>Current preview</small><strong>{decision.shouldPublish ? "Publish CRE Report" : "Skip publication"}</strong></div></div>
+          <p>{decision.shouldPublish ? "At least one signal meets its publication threshold." : "All signals remain below their configured thresholds."}</p>
+          <span className="decision-result__chain">Next: {decision.shouldPublish ? "Ethereum Sepolia" : "Next scheduled run"}</span>
+        </motion.div>
+      </article>
     </section>
   );
 }
