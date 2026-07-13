@@ -1,6 +1,11 @@
 import "./index.css";
 import { useEffect, useState } from "react";
-import { getLatestAlert, getLatestClimateAlert } from "./services/blockchain";
+
+import {
+  getLatestAlert,
+  getLatestClimateAlert,
+} from "./services/blockchain";
+
 import { getClimateRisk } from "./services/climate";
 import { getCarbonIntensity } from "./services/esg";
 
@@ -9,9 +14,9 @@ import ClimateModule from "./components/ClimateModule";
 import HealthModule from "./components/HealthModule";
 import ESGModule from "./components/ESGModule";
 import DecisionGate from "./components/DecisionGate";
+import ZkVerifyCard from "./components/ZkVerifyCard";
 import Workflow from "./components/Workflow";
 import ModuleGrid from "./components/ModuleGrid";
-import ZkVerifyCard from "./components/ZkVerifyCard";
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -25,8 +30,8 @@ function App() {
       try {
         const latest = await getLatestAlert();
         setAlert(latest);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error("Failed to load health alert:", error);
       } finally {
         setLoading(false);
       }
@@ -36,8 +41,8 @@ function App() {
       try {
         const latestClimate = await getClimateRisk();
         setClimate(latestClimate);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error("Failed to load climate data:", error);
       }
     }
 
@@ -45,8 +50,8 @@ function App() {
       try {
         const latest = await getLatestClimateAlert();
         setChainClimate(latest);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error("Failed to load on-chain climate alert:", error);
       }
     }
 
@@ -54,8 +59,8 @@ function App() {
       try {
         const latest = await getCarbonIntensity();
         setEsg(latest);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error("Failed to load ESG data:", error);
       }
     }
 
@@ -70,12 +75,25 @@ function App() {
       <div className="mx-auto max-w-7xl px-6 py-8">
         <Header />
 
-        <ClimateModule climate={climate} chainClimate={chainClimate} />
-        <ESGModule esg={esg} />
         <HealthModule alert={alert} loading={loading} />
-        <DecisionGate alert={alert} climate={chainClimate || climate} esg={esg} />
+
+        <ClimateModule
+          climate={climate}
+          chainClimate={chainClimate}
+        />
+
+        <ESGModule esg={esg} />
+
+        <DecisionGate
+          alert={alert}
+          climate={chainClimate || climate}
+          esg={esg}
+        />
+
         <ZkVerifyCard />
+
         <Workflow />
+
         <ModuleGrid />
       </div>
     </main>

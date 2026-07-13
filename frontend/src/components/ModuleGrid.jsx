@@ -40,10 +40,15 @@ function ModuleGrid() {
           className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5"
         >
           <div className="text-3xl">{module.icon}</div>
-          <h3 className="mt-4 text-xl font-bold">{module.title}</h3>
+
+          <h3 className="mt-4 text-xl font-bold">
+            {module.title}
+          </h3>
+
           <p className="mt-2 text-sm font-semibold text-cyan-300">
             {module.status}
           </p>
+
           <p className="mt-3 text-sm leading-6 text-slate-400">
             {module.text}
           </p>

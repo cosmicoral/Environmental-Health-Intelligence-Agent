@@ -67,3 +67,29 @@ export async function getLatestClimateAlert() {
     publisher: latest.publisher,
   };
 }
+
+export async function getLatestEnvironmentalDecisionAlert() {
+  const contract = await getContract();
+
+  const count = await contract.getEnvironmentalDecisionAlertCount();
+
+  if (count === 0n) {
+    return null;
+  }
+
+  const latest = await contract.getLatestEnvironmentalDecisionAlert();
+
+  return {
+    alertId: Number(latest.alertId),
+    source: latest.source,
+    region: latest.region,
+    disease: latest.disease,
+    healthRisk: Number(latest.healthRisk),
+    climateRisk: Number(latest.climateRisk),
+    esgRisk: Number(latest.esgRisk),
+    proofHash: latest.proofHash,
+    summary: latest.summary,
+    timestamp: Number(latest.timestamp),
+    publisher: latest.publisher,
+  };
+}

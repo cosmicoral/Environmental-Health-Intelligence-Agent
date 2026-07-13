@@ -4,7 +4,7 @@ const creSteps = [
   "Decision Gate",
   "CRE Report",
   "Sepolia Registry",
-  "Dashboard",
+  "React Dashboard",
 ];
 
 const proofSteps = [
@@ -17,7 +17,7 @@ const proofSteps = [
 
 function StepGrid({ title, steps }) {
   return (
-    <div className="mt-5">
+    <div className="mt-6">
       <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
         {title}
       </h3>
@@ -28,7 +28,10 @@ function StepGrid({ title, steps }) {
             key={step}
             className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-center"
           >
-            <p className="text-xs text-slate-500">Step {index + 1}</p>
+            <p className="text-xs uppercase tracking-wider text-slate-500">
+              Step {index + 1}
+            </p>
+
             <p className="mt-2 font-semibold">{step}</p>
           </div>
         ))}
@@ -48,12 +51,20 @@ function Workflow() {
         Environmental Decision and Verification Pipelines
       </h2>
 
-      <StepGrid title="Chainlink CRE pipeline" steps={creSteps} />
-      <StepGrid title="zkVerify proof pipeline" steps={proofSteps} />
+      <StepGrid
+        title="Chainlink CRE Decision Pipeline"
+        steps={creSteps}
+      />
 
-      <p className="mt-5 text-sm leading-6 text-slate-400">
-        Both pipelines are operational in the prototype. Automated CRE-to-zkVerify
-        orchestration and destination-chain receipt verification are planned next.
+      <StepGrid
+        title="zkVerify Proof Pipeline"
+        steps={proofSteps}
+      />
+
+      <p className="mt-6 text-sm leading-6 text-slate-400">
+        Both pipelines are operational in the current prototype. Automated
+        CRE-to-zkVerify orchestration, aggregation receipts, and
+        destination-chain receipt verification remain future work.
       </p>
     </section>
   );

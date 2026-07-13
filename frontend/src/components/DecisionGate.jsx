@@ -20,22 +20,31 @@ function DecisionGate({ alert, climate, esg }) {
   const esgThreshold = 3;
 
   const riskScore = Number(alert?.riskScore ?? 0);
-  const climateRisk = Number(climate?.riskLevel ?? climate?.climateRisk ?? 0);
+
+  const climateRisk = Number(
+    climate?.riskLevel ?? climate?.climateRisk ?? 0
+  );
+
   const esgRisk = calculateEsgRisk(esg);
 
-  const publicHealthDecision =
-    riskScore >= publicHealthThreshold ? "Trigger Alert" : "Monitor Only";
+  const shouldPublishHealth = riskScore >= publicHealthThreshold;
+  const shouldPublishClimate = climateRisk >= climateThreshold;
+  const shouldPublishEsg = esgRisk >= esgThreshold;
 
-  const climateDecision =
-    climateRisk >= climateThreshold ? "Trigger Alert" : "Monitor Only";
+  const publicHealthDecision = shouldPublishHealth
+    ? "Trigger Alert"
+    : "Monitor Only";
 
-  const esgDecision =
-    esgRisk >= esgThreshold ? "Trigger Alert" : "Monitor Only";
+  const climateDecision = shouldPublishClimate
+    ? "Trigger Alert"
+    : "Monitor Only";
+
+  const esgDecision = shouldPublishEsg
+    ? "Trigger Alert"
+    : "Monitor Only";
 
   const shouldPublish =
-    riskScore >= publicHealthThreshold ||
-    climateRisk >= climateThreshold ||
-    esgRisk >= esgThreshold;
+    shouldPublishHealth || shouldPublishClimate || shouldPublishEsg;
 
   const overallDecision = shouldPublish
     ? "Publish On-chain Alert"
@@ -47,27 +56,46 @@ function DecisionGate({ alert, climate, esg }) {
         <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-300">
           Agent Decision Gate
         </p>
-        <h2 className="mt-2 text-xl font-bold">Risk Threshold Evaluation</h2>
+
+        <h2 className="mt-2 text-xl font-bold">
+          Risk Threshold Evaluation
+        </h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Info label="Public Health Decision" value={publicHealthDecision} />
+        <Info
+          label="Public Health Decision"
+          value={publicHealthDecision}
+        />
+
         <Info label="Climate Decision" value={climateDecision} />
+
         <Info label="ESG Decision" value={esgDecision} />
+
         <Info label="Overall Decision" value={overallDecision} />
 
         <Info label="Health Risk" value={`${riskScore}/100`} />
+
         <Info label="Climate Risk" value={`${climateRisk}/5`} />
+
         <Info label="ESG Risk" value={`${esgRisk}/5`} />
 
-        <Info label="Health Threshold" value={`${publicHealthThreshold}/100`} />
-        <Info label="Climate Threshold" value={`${climateThreshold}/5`} />
+        <Info
+          label="Health Threshold"
+          value={`${publicHealthThreshold}/100`}
+        />
+
+        <Info
+          label="Climate Threshold"
+          value={`${climateThreshold}/5`}
+        />
+
         <Info label="ESG Threshold" value={`${esgThreshold}/5`} />
       </div>
 
       <p className="mt-5 text-sm leading-6 text-slate-400">
-        The decision gate mirrors the CRE workflow thresholds for public-health,
-        climate, and carbon-intensity risks.
+        The decision gate mirrors the Chainlink CRE workflow thresholds for
+        public-health, climate, and carbon-intensity risks.
       </p>
     </section>
   );
