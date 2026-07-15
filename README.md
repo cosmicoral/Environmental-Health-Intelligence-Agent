@@ -7,6 +7,7 @@
 **TerraGuardian is the final project developed for the Encode Club Remix AI Bootcamp (Remix AI Bootcamp for Real World Impact).**
 
 TerraGuardian combines a Chainlink CRE workflow, a Solidity demonstration registry, a React dashboard, and a separate Groth16 submission example. The repository keeps those systems distinct: the current CRE workflow does not generate a proof, call zkVerify, or use a zkVerify result to authorize a Sepolia write.
+terra-guardian.vercel.app 
 
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-111827?style=flat-square)](contracts/HealthAlertRegistry.sol)
 [![React](https://img.shields.io/badge/React-19-0B7285?style=flat-square)](frontend/)
@@ -16,7 +17,6 @@ TerraGuardian combines a Chainlink CRE workflow, a Solidity demonstration regist
 [![zkVerify](https://img.shields.io/badge/zkVerify-Volta_historical_demo-6D28D9?style=flat-square)](zkverify/)
 
 </div>
-terra-guardian.vercel.app
 ---
 
 ## Project status
